@@ -4,7 +4,7 @@
 #include "../../config.h"
 
 //#define BACKLIGHT_BREATHING
-#define TAPPING_TERM 135
+#define TAPPING_TERM 200
 
 #define SWAP_LCTR_LGUI
 
