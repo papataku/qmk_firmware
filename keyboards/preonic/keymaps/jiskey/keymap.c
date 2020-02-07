@@ -157,8 +157,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,  \
   _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,  \
   _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, \
-  _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, \
-  _______, _______, _______, _______, TGL_LOW, _______, _______, TGL_RIS, _______, _______, _______, _______  \
+  _______, _______, _______, _______, _______, _______, _______, _______, _______, KC_BTN1, KC_MS_U, KC_BTN2, \
+  _______, _______, _______, _______, TGL_LOW, _______, _______, TGL_RIS, _______, KC_MS_L, KC_MS_D, KC_MS_R  \
 ),
 
 /* Function 2
@@ -230,6 +230,8 @@ const uint16_t PROGMEM keymap_us2jis[][4] = {
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   static bool lshift = false;
   static bool rshift = false;
+  static bool is_shift_jis_key = false;
+  static uint16_t is_shift_jis_last = 0;
   static uint8_t l_r_layer;
   
   switch (keycode) {
@@ -259,6 +261,39 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       }
       return false;
       break;
+    case KC_LSFT:
+      if (record->event.pressed) {
+        if (is_shift_jis_key) {
+          if (lshift || rshift) {
+            unregister_code(keymap_us2jis[is_shift_jis_last][1]);
+            if (!IS_LSFT(keymap_us2jis[is_shift_jis_last][1])) {
+              if (rshift) register_code(KC_RSFT);
+            }
+          } else {
+            unregister_code(keymap_us2jis[keycode][0]);
+            if (IS_LSFT(keymap_us2jis[keycode][0]))
+              unregister_code(KC_LSFT);
+          }
+          is_shift_jis_key = false;
+          is_shift_jis_last = 0;
+        }
+        register_code(keycode);
+      } else {
+        if (is_shift_jis_key) {
+          if (lshift || rshift) {
+            unregister_code(keymap_us2jis[is_shift_jis_last][1]);
+            if (!IS_LSFT(keymap_us2jis[is_shift_jis_last][1]))
+              if (rshift) register_code(KC_RSFT);
+          } else {
+            unregister_code(keymap_us2jis[is_shift_jis_last][0]);
+          }
+          is_shift_jis_key = false;
+          is_shift_jis_last = 0;
+        }
+        unregister_code(keycode);
+      }
+      return false;
+      break;
     case SF_GRV:
     case SF_2:
     case SF_6:
@@ -269,6 +304,21 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     case SF_SCLN:
     case SF_QUOT:
       if (record->event.pressed) {
+        if (0 != is_shift_jis_last) {
+          if (lshift || rshift) {
+            unregister_code(keymap_us2jis[is_shift_jis_last][1]);
+            if (!IS_LSFT(keymap_us2jis[is_shift_jis_last][1])) {
+              if (lshift) register_code(KC_LSFT);
+              if (rshift) register_code(KC_RSFT);
+            }
+          } else {
+            unregister_code(keymap_us2jis[is_shift_jis_last][0]);
+            if (IS_LSFT(keymap_us2jis[is_shift_jis_last][0]))
+              unregister_code(KC_LSFT);
+          }
+        }
+        
+        
         lshift = keyboard_report->mods & MOD_BIT(KC_LSFT);
         rshift = keyboard_report->mods & MOD_BIT(KC_RSFT);
         if (lshift || rshift) {
@@ -277,18 +327,30 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             if (rshift) unregister_code(KC_RSFT);
           }
           register_code(keymap_us2jis[keycode][1]);
-          unregister_code(keymap_us2jis[keycode][1]);
-          if (!IS_LSFT(keymap_us2jis[keycode][1])) {
-            if (lshift) register_code(KC_LSFT);
-            if (rshift) register_code(KC_RSFT);
-          }
         } else {
           if (IS_LSFT(keymap_us2jis[keycode][0]))
             register_code(KC_LSFT);
           register_code(keymap_us2jis[keycode][0]);
-          unregister_code(keymap_us2jis[keycode][0]);
-          if (IS_LSFT(keymap_us2jis[keycode][0]))
-            unregister_code(KC_LSFT);
+        }
+        is_shift_jis_last = keycode;
+        is_shift_jis_key = true;
+      } else {
+        if (is_shift_jis_key) {
+          if (keycode == is_shift_jis_last) {
+            if (lshift || rshift) {
+              unregister_code(keymap_us2jis[keycode][1]);
+              if (!IS_LSFT(keymap_us2jis[keycode][1])) {
+                if (lshift) register_code(KC_LSFT);
+                if (rshift) register_code(KC_RSFT);
+              }
+            } else {
+              unregister_code(keymap_us2jis[keycode][0]);
+              if (IS_LSFT(keymap_us2jis[keycode][0]))
+                unregister_code(KC_LSFT);
+            }
+            is_shift_jis_key = false;
+            is_shift_jis_last = 0;
+          }
         }
       }
       return false;
