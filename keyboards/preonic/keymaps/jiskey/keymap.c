@@ -363,7 +363,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         } else if (keycode == TGL_RIS){
             l_r_layer = _RAISE;
         }
-        if IS_LAYER_ON(l_r_layer){
+        if (IS_LAYER_ON(l_r_layer)){
             layer_off(l_r_layer);
             #ifdef AUDIO_ENABLE
               PLAY_SONG(layer_lock_off_song);
