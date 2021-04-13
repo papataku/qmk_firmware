@@ -91,7 +91,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * `-----------------------------------------------------------------------------------'
  */
 [_QWERTY] = LAYOUT_preonic_grid( \
-  KC_ESC,  KC_1,    SF_2,    KC_3,    KC_4,    KC_5,    SF_6,    SF_7,    SF_8,    SF_9,    SF_0,    KC_DEL, \
+  KC_GESC, KC_1,    SF_2,    KC_3,    KC_4,    KC_5,    SF_6,    SF_7,    SF_8,    SF_9,    SF_0,    KC_DEL, \
   FN2_TAB, KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_BSPC,  \
   ADJUST,  KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L,    SF_SCLN, KC_ENT, \
   KC_LSFT, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_UP,   SF_QUOT,  \
@@ -106,7 +106,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * |------+------+------+------+------+-------------+------+------+------+------+------|
  * |      |  F11 |  F12 |      |      |      |      |   7  |   8  |   9  |      | Bksp |
  * |------+------+------+------+------+-------------+------+------+------+------+------|
- * |Esc/F1|      |PrintS|      |      |   *  |   /  |   4  |   5  |   6  |      |      |
+ * |      |      |PrintS|      |      |   *  |   /  |   4  |   5  |   6  |      |      |
  * |------+------+------+------+------+------|------+------+------+------+------+------|
  * |      |      |      |      |      |   +  |   -  |   1  |   2  |   3  |   =  |      |
  * |------+------+------+------+------+------+------+------+------+------+------+------|
@@ -116,7 +116,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 [_LOWER] = LAYOUT_preonic_grid( \
   SF_GRV,  KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6  , KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_DEL,  \
   _______, KC_F11,  KC_F12,  _______, _______, _______, _______, KC_7,    KC_8,    KC_9,    _______, KC_BSPC, \
-  FN1_ESC, _______, KC_PSCR, _______, _______, KC_PAST, KC_PSLS, KC_4,    KC_5,    KC_6,    _______, _______, \
+  _______, _______, KC_PSCR, _______, _______, KC_PAST, KC_PSLS, KC_4,    KC_5,    KC_6,    _______, _______, \
   _______, _______, _______, _______, _______, JP_PLUS, JP_MINS, KC_1,    KC_2,    KC_3,    KC_PEQL, _______, \
   KC_LCTL, KC_LGUI, KC_LALT, _______, _______, _______, _______, KC_0,    KC_DOT,  KC_COMM, _______, _______ \
 ),
@@ -127,7 +127,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * |------+------+------+------+------+-------------+------+------+------+------+------|
  * |      |  F11 |  F12 |      |      |      |      |   =  |PrintS|   {  |   }  |  |   |
  * |------+------+------+------+------+-------------+------+------+------+------+------|
- * |Esc/F1|      |PrintS|      |      |      |   +  |   -  | HOME |   [  |   ]  |  \   |
+ * |      |      |PrintS|      |      |      |   +  |   -  | HOME |   [  |   ]  |  \   |
  * |------+------+------+------+------+------|------+------+------+------+------+------|
  * |      |      |      |      |      |      |   *  |   _  | END  | PGUP | PGDN |      |
  * |------+------+------+------+------+------+------+------+------+------+------+------|
@@ -137,7 +137,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 [_RAISE] = LAYOUT_preonic_grid( \
   SF_GRV,  KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6  , KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_DEL, \
   _______, KC_F11,  KC_F12,  _______, _______, _______, _______, JP_EQL,  KC_PSCR, JP_LCBR, JP_RCBR, JP_PIPE, \
-  FN1_ESC, _______, KC_PSCR, _______, _______, _______, JP_PLUS, JP_MINS, KC_HOME, JP_LBRC, JP_RBRC, JP_BSLS, \
+  _______, _______, KC_PSCR, _______, _______, _______, JP_PLUS, JP_MINS, KC_HOME, JP_LBRC, JP_RBRC, JP_BSLS, \
   _______, _______, _______, _______, _______, _______, KC_PAST, JP_UNDS, KC_END,  KC_PGUP, KC_PGDN, _______, \
   KC_LCTL, KC_LGUI, KC_LALT, _______, _______, _______, _______, _______, KC_APP,  _______, _______, _______  \
 ),
@@ -186,9 +186,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 /* Adjust (Lower + Raise)
  * ,-----------------------------------------------------------------------------------.
- * |      |      |      |      |      |      |      |      |      |      |      |      |
+ * |      | PLY1 | PLY2 | SAVE1| SAVE2| SAEND|      |      |      |      |      | Reset|
  * |------+------+------+------+------+------+------+------+------+------+------+------|
- * |      | Reset|      |      |      |      |      |      |      |      |      |      |
+ * |      |      |      |      |      |      |      |      |      |      |      |      |
  * |------+------+------+------+------+-------------+------+------+------+------+------|
  * |      |      |      |Aud on|AudOff|AGnorm|AGswap|      |      |      |      |      |
  * |------+------+------+------+------+------|------+------+------+------+------+------|
@@ -198,8 +198,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * `-----------------------------------------------------------------------------------'
  */
 [_ADJUST] = LAYOUT_preonic_grid( \
+  _______, DM_PLY1, DM_PLY2, DM_REC1, DM_REC2, DM_RSTP, _______, _______, _______, _______, _______, RESET, \
   _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, \
-  _______, RESET,   _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, \
   _______, _______, _______,  AU_ON,  AU_OFF,  AG_NORM, AG_SWAP, _______, _______, _______, _______, _______, \
   _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, \
   _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______  \
@@ -215,6 +215,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   float adjust_on_song[][2]      = SONG(ADJUST_ON_SOUND);       // Adjustキーon
   float adjust_off_song[][2]     = SONG(ADJUST_OFF_SOUND);      // Adjustキーoff
   float push_song[][2]           = SONG(PUSH_SOUND);            // 汎用
+  float dmacro_start_song[][2]   = SONG(PLOVER_SOUND);
+  float dmacro_key_song[][2]     = SONG(UNICODE_LINUX);
+  float dmacro_end_song[][2]     = SONG(PLOVER_GOODBYE_SOUND);
+  float dmacro_exec_song[][2]    = SONG(WORKMAN_SOUND);
 #endif
 
 const uint16_t PROGMEM keymap_us2jis[][4] = {
@@ -237,12 +241,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   static uint8_t l_r_layer;
   
   switch (keycode) {
-    case QWERTY:
-      if (record->event.pressed) {
-        set_single_persistent_default_layer(_QWERTY);
-      }
-      return false;
-      break;
     case LOWER:
       if (record->event.pressed) {
         layer_on(_LOWER);
@@ -424,4 +422,25 @@ const macro_t *action_get_macro(keyrecord_t *record, uint8_t id, uint8_t opt)
         return MACRO_TAP_HOLD_LAYER( record, MACRO(T(HENK), T(LANG1), END), _RAISE );
         };
         return MACRO_NONE;
+}
+
+void dynamic_macro_record_start_user(void)
+{
+#ifdef AUDIO_ENABLE
+	PLAY_SONG(dmacro_start_song);
+#endif
+}
+
+void dynamic_macro_record_end_user(int8_t direction)
+{
+#ifdef AUDIO_ENABLE
+	PLAY_SONG(dmacro_end_song);
+#endif
+}
+
+void dynamic_macro_play_user(int8_t direction)
+{
+#ifdef AUDIO_ENABLE
+	PLAY_SONG(dmacro_exec_song);
+#endif
 }
