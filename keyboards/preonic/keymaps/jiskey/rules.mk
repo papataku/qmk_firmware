@@ -5,6 +5,8 @@ DYNAMIC_MACRO_ENABLE = yes
 
 CONSOLE_ENABLE = no         # Console for debug(+400)
 
+SRC +=  twpair_on_jis.c
+
 ifndef QUANTUM_DIR
 	include ../../../../Makefile
 endif

@@ -16,7 +16,7 @@
 
 #include QMK_KEYBOARD_H
 #include "action_layer.h"
-#include "keymap_jp.h"
+#include "twpair_on_jis.h"
 
 // レイヤー
 enum preonic_layers {
@@ -33,6 +33,7 @@ enum preonic_keycodes {
   QWERTY = SAFE_RANGE,  // デフォルトレイヤーをJIS(QWERTY配列)に切り替え
   LOWER,
   RAISE,
+#if 0
   SF_GRV,             // tap : shift = ` : ~
   SF_2,               // tap : shift = 2 : @
   SF_6,               // tap : shift = 6 : ^
@@ -43,6 +44,7 @@ enum preonic_keycodes {
   SF_SCLN,            // tap : shift = ; : :
   SF_QUOT,            // tap : shift = ' : "
   SF_BSLS,            // tap : shift = ¥ : |
+#endif
   TGL_RIS,          // トグルでRaiseレイヤーに切り替え
   TGL_LOW,          // トグルでLowerレイヤーに切り替え
 };
@@ -58,12 +60,11 @@ enum user_macro {
 #define FN1_ESC LT(_FUNC1,KC_ESC)     // タップでESC                 ホールドでFunction_1レイヤーon
 #define FN2_TAB LT(_FUNC2,KC_TAB)     // タップでTab                 ホールドでFunction_2レイヤーon
 #define FN1_SLS LT(_FUNC1,KC_SLSH)    // タップで/                   ホールドでFunction_1レイヤーon
-#define SFT_QUOT SFT_T(SF_QUOT)       // タップで,                   ホールドでSHIFT
 #define ADJUST  MO(_ADJUST)           // ホールドでAdjustレイヤーをon
 #define FUNC1   MO(_FUNC1)            // ホールドでFunction1レイヤーをon
 #define FUNC2   MO(_FUNC2)            // ホールドでFunction2レイヤーをon
 
-#define RCS_K	RCS(KC_F)             // Ctrl + Shift + K
+#define RCS_F	RCS(KC_F)             // Ctrl + Shift + F
 
 #define IS_LSFT(kc) ((QK_LSFT & (kc)) == QK_LSFT)
 
@@ -89,15 +90,15 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * |------+------+------+------+------+-------------+------+------+------+------+------|
  * |      |      |      |      |      |      |      |      |      |      |   :  |      |
  * |------+------+------+------+------+------|------+------+------+------+------+------|
- * |      |      |      |      |      |      |      |      |      |      |      |     |
+ * |      |      |      |      |      |      |      |      |      |      |      |      |
  * |------+------+------+------+------+------+------+------+------+------+------+------|
  * |      |      |      |      |      |             |      |      |      |      |      |
  * `-----------------------------------------------------------------------------------'
  */
 [_QWERTY] = LAYOUT_preonic_grid( \
-  KC_GESC, KC_1,    SF_2,    KC_3,    KC_4,    KC_5,    SF_6,    SF_7,    SF_8,    SF_9,    SF_0,    SF_BSLS, \
+  KC_GESC, KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_BSLS, \
   KC_TAB,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_BSPC,  \
-  ADJUST,  KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L,    SF_SCLN, KC_ENT, \
+  ADJUST,  KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_ENT, \
   KC_LSFT, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_UP,   KC_SLSH,  \
   KC_LCTL, KC_LGUI, KC_LALT, FUNC2,   M_EMHL,  KC_SPC,  KC_SPC,  M_KHKR,  FUNC1,   KC_LEFT, KC_DOWN, KC_RGHT  \
 ),
@@ -118,9 +119,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * `-----------------------------------------------------------------------------------'
  */
 [_LOWER] = LAYOUT_preonic_grid( \
-  SF_GRV,  KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6  , KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_DEL,  \
-  SF_GRV,  KC_1,    SF_2,    KC_3,    KC_4,    KC_5,    SF_6,    SF_7,    SF_8,    SF_9,    SF_0,    SF_BSLS, \
-  _______, _______, _______, _______, _______, KC_PAST, KC_PSLS, KC_4,    KC_5,    KC_6,    _______, SF_QUOT, \
+  KC_GRV,  KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6  , KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_DEL,  \
+  KC_GRV,  KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_BSLS, \
+  _______, _______, _______, _______, _______, KC_PAST, KC_PSLS, KC_4,    KC_5,    KC_6,    _______, KC_QUOT, \
   _______, _______, _______, _______, _______, KC_PPLS, KC_PMNS, KC_1,    KC_2,    KC_3,    KC_PEQL, _______, \
   _______, _______, _______, _______, XXXXXXX, _______, _______, KC_0,    KC_DOT,  KC_COMM, _______, _______  \
 ),
@@ -139,10 +140,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * `-----------------------------------------------------------------------------------'
  */
 [_RAISE] = LAYOUT_preonic_grid( \
-  SF_GRV,  KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6  , KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_DEL, \
-  _______, KC_F1,   KC_F2,   KC_F3,   KC_F4,   _______, _______, JP_EQL,  KC_PSCR, JP_LCBR, JP_RCBR, KC_DEL, \
-  _______, KC_F5,   KC_F6,   KC_F7,   KC_F8,   _______, JP_PLUS, JP_MINS, _______, JP_LBRC, JP_RBRC, SF_QUOT, \
-  _______, KC_F9,   KC_F10,  KC_F11,  KC_F12,  _______, KC_PAST, JP_UNDS, KC_HOME, KC_END,  KC_PGUP, KC_PGDN, \
+  KC_GRV,  KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6  , KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_DEL, \
+  _______, KC_F1,   KC_F2,   KC_F3,   KC_F4,   _______, _______, KC_EQL,  KC_PSCR, KC_LCBR, KC_RCBR, KC_DEL, \
+  _______, KC_F5,   KC_F6,   KC_F7,   KC_F8,   _______, KC_PLUS, KC_MINS, _______, KC_LBRC, KC_RBRC, KC_QUOT, \
+  _______, KC_F9,   KC_F10,  KC_F11,  KC_F12,  _______, KC_PAST, KC_UNDS, KC_HOME, KC_END,  KC_PGUP, KC_PGDN, \
   KC_LCTL, KC_LGUI, KC_LALT, _______, _______, _______, XXXXXXX, _______, KC_APP,  _______, _______, _______  \
 ),
 
@@ -203,7 +204,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  */
 [_ADJUST] = LAYOUT_preonic_grid( \
   _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, RESET,   \
-  _______, DM_PLY1, DM_PLY2, _______, _______, _______, _______, _______, _______, _______, _______, _______, \
+  _______, DM_PLY1, DM_PLY2, _______, _______, _______, _______, _______, _______, _______, _______, RESET,   \
   XXXXXXX, DM_REC1, DM_REC2, DM_RSTP, _______, _______, _______, _______, _______, _______, _______, _______, \
   _______, _______, _______,  AU_ON,  AU_OFF,  AG_NORM, AG_SWAP, _______, _______, KC_BTN1, KC_MS_U, KC_BTN2, \
   _______, _______, _______, _______, _______, _______, _______, _______, _______, KC_MS_L, KC_MS_D, KC_MS_R  \
@@ -225,7 +226,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   float dmacro_exec_song[][2]    = SONG(WORKMAN_SOUND);
 #endif
 
-const uint16_t PROGMEM keymap_us2jis[][4] = {
+#if 0
+const uint16_t PROGMEM keymap_us2jis[][2] = {
   [SF_GRV ]  = { JP_GRV ,  JP_TILD},            // tap : shift = ` : ~
   [SF_2   ]  = { KC_2   ,  JP_AT  },            // tap : shift = 2 : @
   [SF_6   ]  = { KC_6   ,  JP_CIRC},            // tap : shift = 6 : ^
@@ -237,12 +239,15 @@ const uint16_t PROGMEM keymap_us2jis[][4] = {
   [SF_QUOT]  = { JP_QUOT,  JP_DQT },            // tap : shift = ' : "
   [SF_BSLS]  = { JP_BSLS,  JP_PIPE},            // tap : shift = ¥ : |
 };
+#endif
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+#if 0
   static bool lshift = false;
   static bool rshift = false;
   static bool is_shift_jis_key = false;
   static uint16_t is_shift_jis_last = 0;
+#endif
   static uint8_t l_r_layer;
   
   switch (keycode) {
@@ -266,6 +271,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       }
       return false;
       break;
+#if 0
     case KC_LSFT:
       if (record->event.pressed) {
         if (is_shift_jis_key) {
@@ -361,6 +367,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       }
       return false;
       break;
+#endif
     case TGL_LOW:                           // Lower/Raiseにトグル
     case TGL_RIS:
       if (record->event.pressed) {
@@ -415,6 +422,11 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       return true;
       break;
   }
+
+  // type writer pairing on jis keyboard
+  if (!twpair_on_jis(keycode, record))
+    return false;
+
   return true;
 };
 
