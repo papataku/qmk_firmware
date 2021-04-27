@@ -2,6 +2,7 @@
 MOUSEKEY_ENABLE  = yes
 AUDIO_ENABLE = yes
 DYNAMIC_MACRO_ENABLE = yes
+RGBLIGHT_ENABLE = yes
 TAP_DANCE_ENABLE = yes
 
 CONSOLE_ENABLE = no         # Console for debug(+400)
