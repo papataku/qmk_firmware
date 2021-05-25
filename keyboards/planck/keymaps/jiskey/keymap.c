@@ -41,17 +41,22 @@ enum preonic_keycodes {
 // 特殊な動作のマクロ設定
 enum user_macro {
   UM_EMHL,
-  UM_KHKR
+  UM_KHKR,
+  UM_ECAJ
 };
 
 #define M_EMHL MACROTAP(UM_EMHL)      // タップでMacの「英数」とWindowsの「無変換」  ホールドでLowerレイヤー
 #define M_KHKR MACROTAP(UM_KHKR)      // タップでMacの「かな」とWindowsの「変換」    ホールドでRaiseレイヤー
+#define M_ECAJ MACROTAP(UM_ECAJ)      // タップで「ESC」    ホールドでADJUSTレイヤー
 #define ADJ_ESC LT(_ADJUST,KC_ESC)    // タップでESC                 ホールドでADJUSTレイヤーon
 #define FN2_TAB LT(_FUNC2,KC_TAB)     // タップでTab                 ホールドでFunction_2レイヤーon
 #define FN1_SLS LT(_FUNC1,KC_SLSH)    // タップで/                   ホールドでFunction_1レイヤーon
 #define ADJUST  MO(_ADJUST)           // ホールドでAdjustレイヤーをon
 #define FUNC1   MO(_FUNC1)            // ホールドでFunction1レイヤーをon
 #define FUNC2   MO(_FUNC2)            // ホールドでFunction2レイヤーをon
+#define AL_PSCR LALT(KC_PSCR)         // ALT + PrintScreen
+#define AL_C    LALT(KC_C)            // ALT + C
+#define AL_V    LALT(KC_V)            // ALT + V
 
 // Tap Danceの設定
 #ifdef TAP_DANCE_ENABLE
@@ -85,7 +90,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  */
 [_QWERTY] = LAYOUT_planck_grid( \
   KC_TAB,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_BSPC,  \
-  ADJ_ESC, KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_ENT, \
+  M_ECAJ,  KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_ENT, \
   KC_LSFT, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_UP,   KC_SLSH,  \
   KC_LCTL, KC_LGUI, KC_LALT, FUNC2,   TAP_L,   KC_SPC,  KC_SPC,  M_KHKR,  FUNC1,   KC_LEFT, KC_DOWN, KC_RGHT  \
 ),
@@ -130,55 +135,55 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 /* Function 1
  * ,-----------------------------------------------------------------------------------.
- * | ESC  |      |      |      |      |      |      |      |PrintS|      |      |      |
+ * | ESC  |      |      |      |      |      |      |      |PrintS|      |      | Del  |
  * |------+------+------+------+------+-------------+------+------+------+------+------|
  * |      |      |      |      |      |      |      |      |      |      |      |      |
  * |------+------+------+------+------+------|------+------+------+------+------+------|
- * |      |      |      |      |      |      |      |      | HOME | END  | PGUP | PGDN |
+ * |      |      |      |      |      |      |      |      | PGUP | PGDN |      |MU_BT2|
  * |------+------+------+------+------+------+------+------+------+------+------+------|
  * |      |      |      |      |      |             |      | XXXX |      |      |      |
  * `-----------------------------------------------------------------------------------'
  */
 [_FUNC1] = LAYOUT_planck_grid( \
-  KC_ESC,  _______, _______, _______, _______, _______, _______, _______, KC_PSCR, _______, _______, _______, \
+  KC_ESC,  _______, _______, _______, _______, _______, _______, _______, KC_PSCR, _______, _______, KC_DEL, \
   _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, \
-  _______, _______, _______, _______, _______, _______, _______, _______, KC_HOME, KC_END,  KC_PGUP, KC_PGDN, \
+  _______, _______, _______, _______, _______, _______, _______, _______, KC_PGUP, KC_PGDN, _______, KC_BTN2, \
   _______, _______, _______, _______, _______, _______, _______, _______, XXXXXXX, _______, _______, _______  \
 ),
 
 /* Function 2
  * ,-----------------------------------------------------------------------------------.
- * | ESC  | F1   | F2   | F3   | F4   |      |      |      |      |      |      | Bksp |
+ * | ESC  | F1   | F2   | F3   | F4   |      |      |      |AltPrS|      |      | Bksp |
  * |------+------+------+------+------+-------------+------+------+------+------+------|
  * |      | F5   | F6   | F7   | F8   |      |      |      |      |      |      |      |
  * |------+------+------+------+------+------|------+------+------+------+------+------|
  * |      | F9   | F10  | F11  | F12  |      |      |      |      |      |      |      |
  * |------+------+------+------+------+------+------+------+------+------+------+------|
- * | Ctrl | GUI  | Alt  | XXXX |      |             |      |      |      |      |      |
+ * |      |      |      | XXXX |      |             |      |      |      |      |      |
  * `-----------------------------------------------------------------------------------'
  */
 [_FUNC2] = LAYOUT_planck_grid( \
-  KC_ESC,  KC_F1,   KC_F2,   KC_F3,   KC_F4,   _______, _______, _______, _______, _______, _______, KC_BSPC, \
+  KC_ESC,  KC_F1,   KC_F2,   KC_F3,   KC_F4,   _______, _______, _______, AL_PSCR, _______, _______, KC_BSPC, \
   _______, KC_F5,   KC_F6,   KC_F7,   KC_F8,   _______, _______, _______, _______, _______, _______, _______, \
   _______, KC_F9,   KC_F10,  KC_F11 , KC_F12,  _______, _______, _______, _______, _______, _______, _______, \
-  KC_LCTL, KC_LGUI, KC_LALT, XXXXXXX, _______, _______, _______, _______, _______, _______, _______, _______ \
+  _______, _______, _______, XXXXXXX, _______, _______, _______, _______, _______, _______, _______, _______ \
 ),
 
 /* Adjust (Lower + Raise)
  * ,-----------------------------------------------------------------------------------.
- * | XXXX | PLY1 | PLY2 |      |      |      |      |      |      |      |      |RESET |
+ * |      | PLY1 | PLY2 |      |Aud on|AudOff|AGnorm|AGswap|      |      |      |RESET |
  * |------+------+------+------+------+-------------+------+------+------+------+------|
- * |      | SAVE1| SAVE2| SAEND|      |      |      |      |      |      |      |      |
+ * | XXXX | SAVE1| SAVE2| SAEND|      |      |      |      |      |      |      |      |
  * |------+------+------+------+------+------|------+------+------+------+------+------|
- * |      |      |      |Aud on|AudOff|AGnorm|AGswap|      |      |MU_BT2| MUS_U|MU_BT2|
+ * |      |      |      |ALT C |ALT V |      |      |      |      |MU_BT2| MUS_U|MU_BT2|
  * |------+------+------+------+------+------+------+------+------+------+------+------|
  * |      |      |      |      |      |             |      |      | MUS_L| MUS_D| MUS_R|
  * `-----------------------------------------------------------------------------------'
  */
 [_ADJUST] = LAYOUT_planck_grid( \
-  _______, DM_PLY1, DM_PLY2, _______, _______, _______, _______, _______, _______, _______, _______, RESET,   \
+  _______, DM_PLY1, DM_PLY2, _______, AU_ON,   AU_OFF,  AG_NORM, AG_SWAP, _______, _______, _______, RESET,   \
   XXXXXXX, DM_REC1, DM_REC2, DM_RSTP, _______, _______, _______, _______, _______, _______, _______, _______, \
-  _______, _______, _______,  AU_ON,  AU_OFF,  AG_NORM, AG_SWAP, _______, _______, KC_BTN1, KC_MS_U, KC_BTN2, \
+  _______, _______, _______, AL_C,    AL_V,    _______, _______, _______, _______, KC_BTN1, KC_MS_U, KC_BTN2, \
   _______, _______, _______, _______, TGL_LOW, _______, _______, TGL_RIS, _______, KC_MS_L, KC_MS_D, KC_MS_R  \
 )
 };
@@ -279,6 +284,8 @@ const macro_t *action_get_macro(keyrecord_t *record, uint8_t id, uint8_t opt)
         return MACRO_TAP_HOLD_LAYER( record, MACRO(T(MHEN), T(LANG2), END), _LOWER );
         case UM_KHKR: // タップで「かな」と「変換」、ホールドで「Raise」
         return MACRO_TAP_HOLD_LAYER( record, MACRO(T(HENK), T(LANG1), END), _RAISE );
+        case UM_ECAJ: // タップで「ESC」,ホールドで「Adjust」
+        return MACRO_TAP_HOLD_LAYER( record, MACRO(TYPE(KC_ESC), END), _ADJUST );
         };
         return MACRO_NONE;
 }
