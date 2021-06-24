@@ -58,6 +58,22 @@ enum user_macro {
 #define AL_C    LALT(KC_C)            // ALT + C
 #define AL_V    LALT(KC_V)            // ALT + V
 
+enum combos {
+  CMB_ZX_ENT,
+  CMB_XC_BS,
+  CMB_CV_DEL,
+};
+
+const uint16_t PROGMEM cmb_zx_combo[] = {KC_Z, KC_X, COMBO_END};
+const uint16_t PROGMEM cmb_xc_combo[] = {KC_X, KC_C, COMBO_END};
+const uint16_t PROGMEM cmb_cv_combo[] = {KC_C, KC_V, COMBO_END};
+
+combo_t key_combos[COMBO_COUNT] = {
+  [CMB_ZX_ENT] = COMBO(cmb_zx_combo, KC_ENT),
+  [CMB_XC_BS] = COMBO(cmb_xc_combo, KC_BSPC),
+  [CMB_CV_DEL] = COMBO(cmb_cv_combo, KC_DEL)
+};
+
 // Tap Danceの設定
 #ifdef TAP_DANCE_ENABLE
   enum {
