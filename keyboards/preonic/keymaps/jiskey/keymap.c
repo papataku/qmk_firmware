@@ -57,22 +57,8 @@ enum user_macro {
 #define AL_PSCR LALT(KC_PSCR)         // ALT + PrintScreen
 #define AL_C    LALT(KC_C)            // ALT + C
 #define AL_V    LALT(KC_V)            // ALT + V
+#define WS_S    SGUI(KC_S)            // WIN + Shift + S
 
-enum combos {
-  CMB_ZX_ENT,
-  CMB_XC_BS,
-  CMB_CV_DEL,
-};
-
-const uint16_t PROGMEM cmb_zx_combo[] = {KC_Z, KC_X, COMBO_END};
-const uint16_t PROGMEM cmb_xc_combo[] = {KC_X, KC_C, COMBO_END};
-const uint16_t PROGMEM cmb_cv_combo[] = {KC_C, KC_V, COMBO_END};
-
-combo_t key_combos[COMBO_COUNT] = {
-  [CMB_ZX_ENT] = COMBO(cmb_zx_combo, KC_ENT),
-  [CMB_XC_BS] = COMBO(cmb_xc_combo, KC_BSPC),
-  [CMB_CV_DEL] = COMBO(cmb_cv_combo, KC_DEL)
-};
 
 
 // Tap Danceの設定
@@ -128,9 +114,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * |------+------+------+------+------+-------------+------+------+------+------+------|
  * | `/~  |  1 ! |  2 @ |  3 # |  4 $ |  5 % |  6 ^ |  7 & |  8 * |  9 ( |  0 ) | \ |  |
  * |------+------+------+------+------+-------------+------+------+------+------+------|
- * |      |      |      |      |      |  *   |   /  |  4   |  5   |  6   |      | ' "  |
+ * |      |      |WiSh+S|      |      |  *   |   /  |  4   |  5   |  6   |      | ' "  |
  * |------+------+------+------+------+------|------+------+------+------+------+------|
- * |      |      |      |      |      |  +   |   -  |  1   |  2   |  3   |  =   |      |
+ * |      |      | DEL  | Bksp | Enter|  +   |   -  |  1   |  2   |  3   |  =   |      |
  * |------+------+------+------+------+------+------+------+------+------+------+------|
  * |      |      |      |      | XXXX |             |  0   |  .   |  ,   | "0x" | Bksp |
  * `-----------------------------------------------------------------------------------'
@@ -138,9 +124,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 [_LOWER] = LAYOUT_preonic_grid( \
   KC_GRV,  KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6  , KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_DEL,  \
   KC_GRV,  KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_BSLS, \
-  _______, _______, _______, _______, _______, KC_PAST, KC_PSLS, KC_4,    KC_5,    KC_6,    _______, KC_QUOT, \
-  _______, _______, _______, _______, _______, KC_PPLS, KC_PMNS, KC_1,    KC_2,    KC_3,    KC_PEQL, _______, \
-  _______, _______, _______, _______, TAP_L,   _______, _______, KC_0,    KC_DOT,  KC_COMM, MA_0X,   KC_BSPC  \
+  _______, _______, WS_S,    _______, _______, KC_PAST, KC_PSLS, KC_4,    KC_5,    KC_6,    _______, KC_QUOT, \
+  _______, _______, KC_DEL,  KC_BSPC, KC_ENT,  KC_PPLS, KC_PMNS, KC_1,    KC_2,    KC_3,    KC_PEQL, _______, \
+  _______, _______, _______, _______, XXXXXXX, _______, _______, KC_0,    KC_DOT,  KC_COMM, MA_0X,   KC_BSPC  \
 ),
 
 /* Raise
@@ -158,7 +144,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  */
 [_RAISE] = LAYOUT_preonic_grid( \
   KC_GRV,  KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6  , KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_DEL, \
-  _______, KC_F1,   KC_F2,   KC_F3,   KC_F4,   _______, _______, KC_EQL,  KC_PSCR, KC_LCBR, KC_RCBR, KC_DEL, \
+  _______, KC_F1,   KC_F2,   KC_F3,   KC_F4,   _______, _______, KC_EQL,  AL_PSCR, KC_LCBR, KC_RCBR, KC_DEL, \
   _______, KC_F5,   KC_F6,   KC_F7,   KC_F8,   _______, KC_PLUS, KC_MINS, _______, KC_LBRC, KC_RBRC, KC_QUOT, \
   _______, KC_F9,   KC_F10,  KC_F11,  KC_F12,  _______, KC_PAST, KC_UNDS, KC_HOME, KC_END,  KC_PGUP, KC_PGDN, \
   KC_LCTL, KC_LGUI, KC_LALT, _______, _______, _______, XXXXXXX, _______, KC_APP,  _______, _______, _______  \
@@ -179,7 +165,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  */
 [_FUNC1] = LAYOUT_preonic_grid( \
   KC_ESC,  KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6  , KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_DEL, \
-  KC_ESC,  _______, _______, _______, _______, _______, _______, _______, KC_PSCR, _______, _______, KC_DEL, \
+  KC_ESC,  _______, _______, _______, _______, _______, _______, _______, AL_PSCR, _______, _______, KC_DEL, \
   _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, \
   _______, _______, _______, _______, _______, _______, _______, _______, KC_PGUP, KC_PGDN, _______, KC_BTN2, \
   _______, _______, _______, _______, _______, _______, _______, _______, XXXXXXX, _______, _______, _______  \

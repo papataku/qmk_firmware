@@ -68,6 +68,4 @@
 //#define MIDI_TONE_KEYCODE_OCTAVES 2
 
 
-#define COMBO_COUNT 3
-
 #endif
