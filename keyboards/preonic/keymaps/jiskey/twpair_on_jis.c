@@ -143,6 +143,13 @@ bool twpair_on_jis(uint16_t keycode, keyrecord_t *record) {
             if (lshift) unregister_code(KC_LSFT);
             if (rshift) unregister_code(KC_RSFT);
           }
+          /*
+           * @の場合、必ず英数入力にする
+           */
+          if (us2jis[i][1] == JP_AT) {
+            tap_code(KC_MHEN);
+            tap_code(KC_LANG2);
+          }
           register_code(us2jis[i][1]);
         } else {
           if ((us2jis[i][1] & QK_LSFT) == QK_LSFT || (us2jis[i][1] & QK_RSFT) == QK_RSFT) {
