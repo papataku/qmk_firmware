@@ -36,6 +36,10 @@ enum preonic_keycodes {
   TGL_RIS,          // トグルでRaiseレイヤーに切り替え
   TGL_LOW,          // トグルでLowerレイヤーに切り替え
   MA_0X,            // 0x 代入
+  MA_COL1,          // 1 column
+  MA_COL2,          // 2 column
+  MA_COL3,          // 3 column
+  MA_COL4,          // 4 column
 };
 
 // 特殊な動作のマクロ設定
@@ -102,7 +106,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * ,-----------------------------------------------------------------------------------.
  * | `/~  |  1 ! |  2 @ |  3 # |  4 $ |  5 % |  6 ^ |  7 & |  8 * |  9 ( |  0 ) | \ |  |
  * |------+------+------+------+------+-------------+------+------+------+------+------|
- * |      |      |WiSh+S|      |      |  *   |   /  |  4   |  5   |  6   |      | ' "  |
+ * |      |      |PrintS|      |      |  *   |   /  |  4   |  5   |  6   |      | ' "  |
  * |------+------+------+------+------+------|------+------+------+------+------+------|
  * |      |      | DEL  | Bksp | Enter|  +   |   -  |  1   |  2   |  3   |  =   |      |
  * |------+------+------+------+------+------+------+------+------+------+------+------|
@@ -111,7 +115,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  */
 [_LOWER] = LAYOUT_planck_grid( \
   KC_GRV,  KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_BSLS, \
-  _______, _______, WS_S,    _______, _______, KC_PAST, KC_PSLS, KC_4,    KC_5,    KC_6,    _______, KC_QUOT, \
+  _______, _______, AL_PSCR, _______, _______, KC_PAST, KC_PSLS, KC_4,    KC_5,    KC_6,    _______, KC_QUOT, \
   _______, _______, KC_DEL,  KC_BSPC, KC_ENT,  KC_PPLS, KC_PMNS, KC_1,    KC_2,    KC_3,    KC_PEQL, _______, \
   _______, _______, _______, _______, XXXXXXX, _______, _______, KC_0,    KC_DOT,  KC_COMM, MA_0X,   KC_BSPC  \
 ),
@@ -124,21 +128,21 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * |------+------+------+------+------+------|------+------+------+------+------+------|
  * |      |  F9  |  F10 |  F11 |  F12 |      |   *  |   _  | HOME | END  | PGUP | PGDN |
  * |------+------+------+------+------+------+------+------+------+------+------+------|
- * | Ctrl | GUI  | Alt  |      |      |             | XXXX | App  |      |      |      |
+ * |      |      |      |      |      |             | XXXX | App  |      |      |      |
  * `-----------------------------------------------------------------------------------'
  */
 [_RAISE] = LAYOUT_planck_grid( \
   _______, KC_F1,   KC_F2,   KC_F3,   KC_F4,   _______, _______, KC_EQL,  AL_PSCR, KC_LCBR, KC_RCBR, KC_DEL, \
   _______, KC_F5,   KC_F6,   KC_F7,   KC_F8,   _______, KC_PLUS, KC_MINS, _______, KC_LBRC, KC_RBRC, KC_QUOT, \
   _______, KC_F9,   KC_F10,  KC_F11,  KC_F12,  _______, KC_PAST, KC_UNDS, KC_HOME, KC_END,  KC_PGUP, KC_PGDN, \
-  KC_LCTL, KC_LGUI, KC_LALT, _______, _______, _______, XXXXXXX, _______, KC_APP,  _______, _______, _______  \
+  _______, _______, _______, _______, _______, _______, XXXXXXX, _______, KC_APP,  _______, _______, _______  \
 ),
 
 /* Function 1
  * ,-----------------------------------------------------------------------------------.
- * | ESC  |      |      |      |      |      |      |      |PrintS|      |      | Del  |
+ * | ESC  |      |      |      |      |      |      |      |PrintS|      |WHE_U | Del  |
  * |------+------+------+------+------+-------------+------+------+------+------+------|
- * |      |      |      |      |      |      |      |      |      |      |      |      |
+ * |      |      |      |      |      |      |      |      |      |WHE_L |WHE_D |WHE_R |
  * |------+------+------+------+------+------|------+------+------+------+------+------|
  * |      |      |      |      |      |      |      |      | PGUP | PGDN |      |MU_BT2|
  * |------+------+------+------+------+------+------+------+------+------+------+------|
@@ -146,8 +150,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * `-----------------------------------------------------------------------------------'
  */
 [_FUNC1] = LAYOUT_planck_grid( \
-  KC_ESC,  _______, _______, _______, _______, _______, _______, _______, AL_PSCR, _______, _______, KC_DEL, \
-  _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, \
+  KC_ESC,  _______, _______, _______, _______, _______, _______, _______, AL_PSCR, _______, KC_WH_U, KC_DEL, \
+  _______, _______, _______, _______, _______, _______, _______, _______, _______, KC_WH_L, KC_WH_D, KC_WH_R, \
   _______, _______, _______, _______, _______, _______, _______, _______, KC_PGUP, KC_PGDN, _______, KC_BTN2, \
   _______, _______, _______, _______, _______, _______, _______, _______, XXXXXXX, _______, _______, _______  \
 ),
@@ -172,20 +176,20 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 /* Adjust (Lower + Raise)
  * ,-----------------------------------------------------------------------------------.
- * |      | PLY1 | PLY2 |      |Aud on|AudOff|AGnorm|AGswap|      |      |      |RESET |
+ * |      | COL1 | COL2 | COL3 | COL4 |Aud on|AudOff|AGnorm|AGswap|      |      |RESET |
  * |------+------+------+------+------+-------------+------+------+------+------+------|
- * | XXXX | SAVE1| SAVE2| SAEND|      |      |      |      |      |      |      |      |
+ * | XXXX | PLY1 | PLY2 |      |      |      |      |      |      |      |      |      |
  * |------+------+------+------+------+------|------+------+------+------+------+------|
- * |      |      |      |ALT C |ALT V |      |      |      |      |MU_BT2| MUS_U|MU_BT2|
+ * |      | SAVE1| SAVE2|ALT C |ALT V |      |      |      |      |MU_BT2| MUS_U|MU_BT2|
  * |------+------+------+------+------+------+------+------+------+------+------+------|
- * |      |      |      |      |      |             |      |      | MUS_L| MUS_D| MUS_R|
+ * |      | SAEND| SAEND|      |      |             |      |      | MUS_L| MUS_D| MUS_R|
  * `-----------------------------------------------------------------------------------'
  */
 [_ADJUST] = LAYOUT_planck_grid( \
-  _______, DM_PLY1, DM_PLY2, _______, AU_ON,   AU_OFF,  AG_NORM, AG_SWAP, _______, _______, _______, RESET,   \
-  XXXXXXX, DM_REC1, DM_REC2, DM_RSTP, _______, _______, _______, _______, _______, _______, _______, _______, \
-  _______, _______, _______, AL_C,    AL_V,    _______, _______, _______, _______, KC_BTN1, KC_MS_U, KC_BTN2, \
-  _______, _______, _______, _______, TGL_LOW, _______, _______, TGL_RIS, _______, KC_MS_L, KC_MS_D, KC_MS_R  \
+  _______, MA_COL1, MA_COL2, MA_COL3, MA_COL4, AU_ON,   AU_OFF,  AG_NORM, AG_SWAP, _______, _______, RESET,   \
+  XXXXXXX, DM_PLY1, DM_PLY2, _______, _______, _______, _______, _______, _______, _______, _______, _______, \
+  _______, DM_REC1, DM_REC2, AL_C,    AL_V,    _______, _______, _______, _______, KC_BTN1, KC_MS_U, KC_BTN2, \
+  _______, DM_RSTP, DM_RSTP, _______, TGL_LOW, _______, _______, TGL_RIS, _______, KC_MS_L, KC_MS_D, KC_MS_R  \
 )
 };
 
@@ -265,6 +269,30 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     case MA_0X:
       if (record->event.pressed) {
         SEND_STRING("0x");
+      }
+      return false;
+      break;
+    case MA_COL1:
+      if (record->event.pressed) {
+        SEND_STRING("1qaz");
+      }
+      return false;
+      break;
+    case MA_COL2:
+      if (record->event.pressed) {
+        SEND_STRING("2wsx");
+      }
+      return false;
+      break;
+    case MA_COL3:
+      if (record->event.pressed) {
+        SEND_STRING("3edc");
+      }
+      return false;
+      break;
+    case MA_COL4:
+      if (record->event.pressed) {
+        SEND_STRING("4rfv");
       }
       return false;
       break;
