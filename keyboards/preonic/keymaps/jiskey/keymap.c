@@ -17,6 +17,9 @@
 #include QMK_KEYBOARD_H
 #include "action_layer.h"
 #include "twpair_on_jis.h"
+#ifdef CONSOLE_ENABLE
+  #include <print.h>
+#endif
 
 // レイヤー
 enum preonic_layers {
@@ -122,7 +125,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * |------+------+------+------+------+------|------+------+------+------+------+------|
  * |      |      | DEL  | Bksp | Enter|  +   |   -  |  1   |  2   |  3   |  =   |      |
  * |------+------+------+------+------+------+------+------+------+------+------+------|
- * |      |      |      |      | XXXX |             |  0   |  .   |  ,   | "0x" | Bksp |
+ * |      |      |      |      | XXXX |      0      |  .   |  ,   |      | "0x" |      |
  * `-----------------------------------------------------------------------------------'
  */
 [_LOWER] = LAYOUT_preonic_grid( \
@@ -130,7 +133,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   KC_GRV,  KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_BSLS, \
   _______, _______, AL_PSCR, _______, _______, KC_PAST, KC_PSLS, KC_4,    KC_5,    KC_6,    _______, KC_QUOT, \
   _______, _______, KC_DEL,  KC_BSPC, KC_ENT,  KC_PPLS, KC_PMNS, KC_1,    KC_2,    KC_3,    KC_PEQL, _______, \
-  _______, _______, _______, _______, XXXXXXX, _______, _______, KC_0,    KC_DOT,  KC_COMM, MA_0X,   KC_BSPC  \
+  _______, _______, _______, _______, XXXXXXX, KC_0,    KC_0,    KC_DOT,  KC_COMM, _______, MA_0X,   _______  \
 ),
 
 /* Raise
@@ -322,6 +325,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       break;
   }
 
+#ifdef CONSOLE_ENABLE
+  uprintf("pressed: %02X\n", keycode);
+#endif
   // type writer pairing on jis keyboard
   if (!twpair_on_jis(keycode, record))
     return false;
@@ -445,4 +451,12 @@ void x_reset_1 (qk_tap_dance_state_t *state, void *user_data) {
 qk_tap_dance_action_t tap_dance_actions[] = {
  [X_TAP_DANCE_1] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, x_finished_1, x_reset_1),
 };
+#endif
+
+#ifdef CONSOLE_ENABLE
+void matrix_init_user(void) {
+  debug_enable = true;
+//  debug_matrix = true;
+//  debug_mouse  = true;
+}
 #endif

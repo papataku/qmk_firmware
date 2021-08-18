@@ -27,6 +27,9 @@
 
 #include QMK_KEYBOARD_H
 #include "keymap_jp.h"
+#ifdef CONSOLE_ENABLE
+  #include <print.h>
+#endif
 
 const uint16_t us2jis[][2] = {
   {KC_LPRN, JP_LPRN},
@@ -52,6 +55,7 @@ const uint16_t us2jis[][2] = {
   {KC_AMPR, JP_AMPR},
   {KC_CIRC, JP_CIRC},
 };
+#define MODE_SHIFT_LOCAL_SAVE   (1)
 
 bool twpair_on_jis(uint16_t keycode, keyrecord_t *record) {
   static bool lshift = false;
@@ -63,6 +67,13 @@ bool twpair_on_jis(uint16_t keycode, keyrecord_t *record) {
   bool lshifted = keyboard_report->mods & MOD_BIT(KC_LSFT); // シフトキーの状態
   bool rshifted = keyboard_report->mods & MOD_BIT(KC_RSFT);
   bool shifted = lshifted | rshifted;
+#ifdef CONSOLE_ENABLE
+  uprintf("[%s:%d] keyboard_report->mods is %x\n", __func__, __LINE__, keyboard_report->mods);
+#endif
+#if MODE_SHIFT_LOCAL_SAVE
+  static bool lshift_status = false;
+  shifted = lshift_status;
+#endif
 
   if (KC_LSFT == keycode) {
     if (record->event.pressed) {
@@ -80,7 +91,10 @@ bool twpair_on_jis(uint16_t keycode, keyrecord_t *record) {
         is_shift_jis_key = false;
         is_shift_jis_last = 0xFFFF;
       }
-      register_code(keycode);
+      //register_code(keycode);
+#if MODE_SHIFT_LOCAL_SAVE
+      lshift_status = true;
+#endif
     } else {
       if (is_shift_jis_key) {
         if (lshift || rshift) {
@@ -93,28 +107,50 @@ bool twpair_on_jis(uint16_t keycode, keyrecord_t *record) {
         is_shift_jis_key = false;
         is_shift_jis_last = 0xFFFF;
       }
-      unregister_code(keycode);
+      //unregister_code(keycode);
+#if MODE_SHIFT_LOCAL_SAVE
+      lshift_status = false;
+#endif
     }
-    return false;
+    //return false;
+    return true;
   }
 
   if (!is_shift_jis_key) {
     if (shifted) {
+#ifdef CONSOLE_ENABLE
+      uprintf("[%s:%d]\n", __func__, __LINE__);
+#endif
       skeycode = QK_LSFT | keycode;
     } else {
+#ifdef CONSOLE_ENABLE
+      uprintf("[%s:%d]\n", __func__, __LINE__);
+#endif
       skeycode = keycode;
     }
   } else {
     if (lshift || rshift) {
+#ifdef CONSOLE_ENABLE
+      uprintf("[%s:%d]\n", __func__, __LINE__);
+#endif
       skeycode = QK_LSFT | keycode;
     } else {
+#ifdef CONSOLE_ENABLE
+      uprintf("[%s:%d]\n", __func__, __LINE__);
+#endif
       skeycode = keycode;
     }
   }
+#ifdef CONSOLE_ENABLE
+  uprintf("pressed: %02X checking: %02X\n", keycode, skeycode);
+#endif
 
   for (int i = 0; i < sizeof(us2jis) / sizeof(us2jis[0]); i++) {
     if (us2jis[i][0] == skeycode) {
       /* 該当コードがある場合 */
+#ifdef CONSOLE_ENABLE
+      uprintf("pressed: %02X checked: %02X\n", keycode, skeycode);
+#endif
 
       if (record->event.pressed) {
 
@@ -135,8 +171,12 @@ bool twpair_on_jis(uint16_t keycode, keyrecord_t *record) {
         }
 
         /* 現状のシフト状況を記録 */
+#if MODE_SHIFT_LOCAL_SAVE
+        lshift = lshift_status;
+#else
         lshift = keyboard_report->mods & MOD_BIT(KC_LSFT);
         rshift = keyboard_report->mods & MOD_BIT(KC_RSFT);
+#endif
 
         if (lshift || rshift) {
           if (!((us2jis[i][1] & QK_LSFT) == QK_LSFT || (us2jis[i][1] & QK_RSFT) == QK_RSFT)) {
@@ -187,7 +227,21 @@ bool twpair_on_jis(uint16_t keycode, keyrecord_t *record) {
         return false;
       }
     }
-
+  }
+  if (is_shift_jis_key) {
+    if (lshift || rshift) {
+      unregister_code(us2jis[is_shift_jis_last][1]);
+      if (!((us2jis[is_shift_jis_last][1] & QK_LSFT) == QK_LSFT || (us2jis[is_shift_jis_last][1] & QK_RSFT) == QK_RSFT)) {
+        if (lshift) register_code(KC_LSFT);
+        if (rshift) register_code(KC_RSFT);
+      }
+    } else {
+      unregister_code(us2jis[is_shift_jis_last][1]);
+      if ((us2jis[is_shift_jis_last][1] & QK_LSFT) == QK_LSFT || (us2jis[is_shift_jis_last][1] & QK_RSFT) == QK_RSFT)
+        unregister_code(KC_LSFT);
+    }
+    is_shift_jis_key = false;
+    is_shift_jis_last = 0xFFFF;
   }
 
   return true;
