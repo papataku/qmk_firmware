@@ -22,6 +22,7 @@
 enum preonic_layers {
   _QWERTY,        // デフォルトレイヤー(JIS配列で認識)
   _LOWER,
+  _LOW_S,
   _RAISE,
   _FUNC1,
   _FUNC2,
@@ -59,6 +60,7 @@ enum user_macro {
 #define ADJUST  MO(_ADJUST)           // ホールドでAdjustレイヤーをon
 #define FUNC1   MO(_FUNC1)            // ホールドでFunction1レイヤーをon
 #define FUNC2   MO(_FUNC2)            // ホールドでFunction2レイヤーをon
+#define SFT_LOW MO(_LOW_S)            // ホールドでShift+Lowレイヤーをon
 #define AL_PSCR LALT(KC_PSCR)         // ALT + PrintScreen
 #define AL_C    LALT(KC_C)            // ALT + C
 #define AL_V    LALT(KC_V)            // ALT + V
@@ -69,14 +71,15 @@ enum user_macro {
   enum {
    X_TAP_DANCE_1 = 0,
   };
-  #define TAP_L TD(X_TAP_DANCE_1)     // タップで「英数」「無変換」 ホールドでLower  ダブルタップでLowerレイヤーのトグル
+  #define TAP_F1 TD(X_TAP_DANCE_1)
 #else
-  #define TAP_L M_EMHL                // Tap Danceが有効でなければM_EMHLに設定
+  #define TAP_F1 FUNC1
 #endif
 
 // LED用の各レイヤーで使用するLEDの番号と数と色を指定する。
 const rgblight_segment_t PROGMEM my_base_layer[] = RGBLIGHT_LAYER_SEGMENTS(   {0, 9, 0, 0, 0}    );
 const rgblight_segment_t PROGMEM my_lower_layer[] = RGBLIGHT_LAYER_SEGMENTS(  {0, 9, HSV_RED}  );
+const rgblight_segment_t PROGMEM my_lowers_layer[] = RGBLIGHT_LAYER_SEGMENTS(  {0, 9, HSV_RED}  );
 const rgblight_segment_t PROGMEM my_raise_layer[] = RGBLIGHT_LAYER_SEGMENTS(  {0, 9, HSV_YELLOW}  );
 const rgblight_segment_t PROGMEM my_adjust_layer[] = RGBLIGHT_LAYER_SEGMENTS( {0, 9, HSV_WHITE}  );
 
@@ -98,7 +101,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   KC_TAB,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_BSPC,  \
   M_ECAJ,  KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_ENT, \
   KC_LSFT, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_UP,   KC_SLSH,  \
-  KC_LCTL, KC_LGUI, KC_LALT, FUNC2,   TAP_L,   KC_SPC,  KC_SPC,  M_KHKR,  FUNC1,   KC_LEFT, KC_DOWN, KC_RGHT  \
+  KC_LCTL, KC_LGUI, KC_LALT, FUNC2,   M_EMHL,  KC_SPC,  KC_SPC,  M_KHKR,  TAP_F1,  KC_LEFT, KC_DOWN, KC_RGHT  \
 ),
 
 
@@ -117,8 +120,26 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 [_LOWER] = LAYOUT_planck_grid( \
   KC_GRV,  KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_BSLS, \
   _______, _______, AL_PSCR, _______, _______, KC_PAST, KC_PSLS, KC_4,    KC_5,    KC_6,    _______, KC_QUOT, \
-  _______, _______, KC_DEL,  KC_BSPC, KC_ENT,  KC_PPLS, KC_PMNS, KC_1,    KC_2,    KC_3,    KC_PEQL, _______, \
+  SFT_LOW, _______, KC_DEL,  KC_BSPC, KC_ENT,  KC_PPLS, KC_PMNS, KC_1,    KC_2,    KC_3,    KC_PEQL, _______, \
   _______, _______, _______, _______, XXXXXXX, _______, _______, KC_0,    KC_DOT,  KC_COMM, MA_0X,   _______  \
+),
+
+/* Lower + Shift
+ * ,-----------------------------------------------------------------------------------.
+ * |      |      |      |      |      |      |      |      |      | (    | )    |      |
+ * |------+------+------+------+------+-------------+------+------+------+------+------|
+ * |      |      |      |      |      |      |      |      |      | {    | }    |      |
+ * |------+------+------+------+------+------|------+------+------+------+------+------|
+ * |      |      |      |      |      |      |      |      |      | [    | ]    |      |
+ * |------+------+------+------+------+------+------+------+------+------+------+------|
+ * |      |      |      |      |      |             |      |      |      |      |      |
+ * `-----------------------------------------------------------------------------------'
+ */
+[_LOW_S] = LAYOUT_planck_grid( \
+ S(KC_GRV),S(KC_1), S(KC_2), S(KC_3), S(KC_4), S(KC_5), S(KC_6), S(KC_7), S(KC_8), KC_LPRN, KC_RPRN, S(KC_BSLS), \
+  _______, _______, _______, _______, _______, _______, _______, _______, _______, KC_LCBR, KC_RCBR, S(KC_QUOT), \
+  XXXXXXX, _______, _______, _______, _______, _______, _______, _______, _______, KC_LBRC, KC_RBRC, _______, \
+  _______, _______, _______, _______, XXXXXXX, _______, _______, _______, _______, _______, _______, _______  \
 ),
 
 /* Raise
@@ -190,7 +211,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   _______, _______, _______, _______, _______, _______, _______, KC_7,    KC_8,    KC_9,    _______, _______, \
   _______, _______, _______, _______, _______, _______, KC_PSLS, KC_4,    KC_5,    KC_6,    KC_PAST, _______, \
   _______, _______, _______, _______, _______, _______, KC_PMNS, KC_1,    KC_2,    KC_3,    KC_PPLS, _______, \
-  _______, _______, _______, _______, TAP_L,   _______, _______, KC_0,    KC_DOT,  KC_COMM, _______, _______  \
+  _______, _______, _______, _______, TAP_F1,  _______, _______, KC_0,    KC_DOT,  KC_COMM, _______, TAP_F1   \
 ),
 
 /* Adjust (Lower + Raise)
@@ -363,6 +384,7 @@ void dynamic_macro_play_user(int8_t direction)
 const rgblight_segment_t* const PROGMEM my_rgb_layers[] = RGBLIGHT_LAYERS_LIST(
     my_base_layer,
     my_lower_layer,
+    my_lowers_layer,
     my_raise_layer,
     my_adjust_layer
 );
@@ -374,9 +396,9 @@ void keyboard_post_init_user(void) {
 // LEDのレイヤーとキーマップで指定したレイヤーを対応させる
 layer_state_t layer_state_set_user(layer_state_t state) {
     rgblight_set_layer_state(1, get_highest_layer(state) == _LOWER);
-    rgblight_set_layer_state(1, get_highest_layer(state) == _10KEY);
-    rgblight_set_layer_state(2, get_highest_layer(state) == _RAISE);
-    rgblight_set_layer_state(3, get_highest_layer(state) == _ADJUST);
+    rgblight_set_layer_state(2, get_highest_layer(state) == _10KEY);
+    rgblight_set_layer_state(3, get_highest_layer(state) == _RAISE);
+    rgblight_set_layer_state(4, get_highest_layer(state) == _ADJUST);
 
     if (get_highest_layer(state) == _ADJUST) {
         PLAY_SONG(adjust_on_song);
@@ -418,21 +440,18 @@ static tap xtap_state = {
 void x_finished_1 (qk_tap_dance_state_t *state, void *user_data) {
   xtap_state.state = cur_dance(state);
   switch (xtap_state.state) {
-    case SINGLE_TAP:                     // 単押しで「英数」と「無変換」  Lowerレイヤーがトグルされている場合はレイヤーをオフにする
+    case SINGLE_TAP:
         if (IS_LAYER_ON(_10KEY)){
             #ifdef AUDIO_ENABLE
               PLAY_SONG(layer_lock_off_song);
             #endif
             layer_off(_10KEY);
-        } else {
-        register_code(KC_MHEN);
-        register_code(KC_LANG2);
         }
         break;
-    case SINGLE_HOLD:                  // 長押しでLowerレイヤーをオンにする
-        layer_on(_LOWER);
+    case SINGLE_HOLD:
+        layer_on(_FUNC1);
         break;
-    case DOUBLE_TAP:                   // ダブルタップでLowerレイヤーをトグル
+    case DOUBLE_TAP:
         layer_invert(_10KEY);
         if (IS_LAYER_ON(_10KEY)){
             #ifdef AUDIO_ENABLE
@@ -450,13 +469,12 @@ void x_finished_1 (qk_tap_dance_state_t *state, void *user_data) {
 void x_reset_1 (qk_tap_dance_state_t *state, void *user_data) {
   switch (xtap_state.state) {
     case SINGLE_TAP:
-        unregister_code(KC_LANG2);
-        unregister_code(KC_MHEN);
         break;
     case SINGLE_HOLD:
-        layer_off(_LOWER);
+        layer_off(_FUNC1);
         break;
-    case DOUBLE_TAP:  break;
+    case DOUBLE_TAP:
+        break;
   }
   xtap_state.state = 0;
 }
