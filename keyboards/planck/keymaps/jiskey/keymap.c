@@ -25,6 +25,7 @@ enum preonic_layers {
   _RAISE,
   _FUNC1,
   _FUNC2,
+  _10KEY,
   _ADJUST
 };
 
@@ -110,14 +111,14 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * |------+------+------+------+------+------|------+------+------+------+------+------|
  * |      |      | DEL  | Bksp | Enter|  +   |   -  |  1   |  2   |  3   |  =   |      |
  * |------+------+------+------+------+------+------+------+------+------+------+------|
- * |      |      |      |      | XXXX |      0      |  .   |  ,   |      | "0x" |      |
+ * |      |      |      |      | XXXX |             |  0   |  .   |  ,   | "0x" |      |
  * `-----------------------------------------------------------------------------------'
  */
 [_LOWER] = LAYOUT_planck_grid( \
   KC_GRV,  KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_BSLS, \
   _______, _______, AL_PSCR, _______, _______, KC_PAST, KC_PSLS, KC_4,    KC_5,    KC_6,    _______, KC_QUOT, \
   _______, _______, KC_DEL,  KC_BSPC, KC_ENT,  KC_PPLS, KC_PMNS, KC_1,    KC_2,    KC_3,    KC_PEQL, _______, \
-  _______, _______, _______, _______, XXXXXXX, KC_0,    KC_0,    KC_DOT,  KC_COMM, _______, MA_0X,   _______  \
+  _______, _______, _______, _______, XXXXXXX, _______, _______, KC_0,    KC_DOT,  KC_COMM, MA_0X,   _______  \
 ),
 
 /* Raise
@@ -172,6 +173,24 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   _______, KC_F5,   KC_F6,   KC_F7,   KC_F8,   _______, _______, _______, _______, _______, _______, _______, \
   _______, KC_F9,   KC_F10,  KC_F11 , KC_F12,  _______, _______, _______, _______, _______, _______, _______, \
   _______, _______, _______, XXXXXXX, _______, _______, _______, _______, _______, _______, _______, _______ \
+),
+
+/* 10key
+ * ,-----------------------------------------------------------------------------------.
+ * |      |      |      |      |      |      |      |  7   |  8   |  9   |      |      |
+ * |------+------+------+------+------+-------------+------+------+------+------+------|
+ * |      |      |      |      |      |      |   /  |  4   |  5   |  6   |  *   |      |
+ * |------+------+------+------+------+------|------+------+------+------+------+------|
+ * |      |      |      |      |      |      |   -  |  1   |  2   |  3   |  +   |      |
+ * |------+------+------+------+------+------+------+------+------+------+------+------|
+ * |      |      |      |      |      |             |  0   |  .   |  ,   |      |      |
+ * `-----------------------------------------------------------------------------------'
+ */
+[_10KEY] = LAYOUT_planck_grid( \
+  _______, _______, _______, _______, _______, _______, _______, KC_7,    KC_8,    KC_9,    _______, _______, \
+  _______, _______, _______, _______, _______, _______, KC_PSLS, KC_4,    KC_5,    KC_6,    KC_PAST, _______, \
+  _______, _______, _______, _______, _______, _______, KC_PMNS, KC_1,    KC_2,    KC_3,    KC_PPLS, _______, \
+  _______, _______, _______, _______, TAP_L,   _______, _______, KC_0,    KC_DOT,  KC_COMM, _______, _______  \
 ),
 
 /* Adjust (Lower + Raise)
@@ -355,6 +374,7 @@ void keyboard_post_init_user(void) {
 // LEDのレイヤーとキーマップで指定したレイヤーを対応させる
 layer_state_t layer_state_set_user(layer_state_t state) {
     rgblight_set_layer_state(1, get_highest_layer(state) == _LOWER);
+    rgblight_set_layer_state(1, get_highest_layer(state) == _10KEY);
     rgblight_set_layer_state(2, get_highest_layer(state) == _RAISE);
     rgblight_set_layer_state(3, get_highest_layer(state) == _ADJUST);
 
@@ -399,11 +419,11 @@ void x_finished_1 (qk_tap_dance_state_t *state, void *user_data) {
   xtap_state.state = cur_dance(state);
   switch (xtap_state.state) {
     case SINGLE_TAP:                     // 単押しで「英数」と「無変換」  Lowerレイヤーがトグルされている場合はレイヤーをオフにする
-        if (IS_LAYER_ON(_LOWER)){
+        if (IS_LAYER_ON(_10KEY)){
             #ifdef AUDIO_ENABLE
               PLAY_SONG(layer_lock_off_song);
             #endif
-            layer_off(_LOWER);
+            layer_off(_10KEY);
         } else {
         register_code(KC_MHEN);
         register_code(KC_LANG2);
@@ -413,8 +433,8 @@ void x_finished_1 (qk_tap_dance_state_t *state, void *user_data) {
         layer_on(_LOWER);
         break;
     case DOUBLE_TAP:                   // ダブルタップでLowerレイヤーをトグル
-        layer_invert(_LOWER);
-        if (IS_LAYER_ON(_LOWER)){
+        layer_invert(_10KEY);
+        if (IS_LAYER_ON(_10KEY)){
             #ifdef AUDIO_ENABLE
               PLAY_SONG(layer_lock_on_song);
             #endif
