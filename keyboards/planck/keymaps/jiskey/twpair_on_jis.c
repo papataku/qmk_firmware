@@ -80,12 +80,12 @@ bool twpair_on_jis(uint16_t keycode, keyrecord_t *record) {
       if (is_shift_jis_key) {
         if (lshift || rshift) {
           unregister_code(us2jis[is_shift_jis_last][1]);
-          if (!((us2jis[is_shift_jis_last][1] & QK_LSFT) == QK_LSFT || (us2jis[is_shift_jis_last][1] & QK_RSFT) == QK_RSFT)) {
+          if (!((us2jis[is_shift_jis_last][1] & QK_LSFT) == QK_LSFT)) {
             if (rshift) register_code(KC_RSFT);
           }
         } else {
           unregister_code(us2jis[is_shift_jis_last][1]);
-          if ((us2jis[is_shift_jis_last][1] & QK_LSFT) == QK_LSFT || (us2jis[is_shift_jis_last][1] & QK_RSFT) == QK_RSFT)
+          if ((us2jis[is_shift_jis_last][1] & QK_LSFT) == QK_LSFT)
             unregister_code(KC_LSFT);
         }
         is_shift_jis_key = false;
@@ -99,7 +99,7 @@ bool twpair_on_jis(uint16_t keycode, keyrecord_t *record) {
       if (is_shift_jis_key) {
         if (lshift || rshift) {
           unregister_code(us2jis[is_shift_jis_last][1]);
-          if (!((us2jis[is_shift_jis_last][1] & QK_LSFT) == QK_LSFT || (us2jis[is_shift_jis_last][1] & QK_RSFT) == QK_RSFT))
+          if (!((us2jis[is_shift_jis_last][1] & QK_LSFT) == QK_LSFT))
             if (rshift) register_code(KC_RSFT);
         } else {
           unregister_code(us2jis[is_shift_jis_last][1]);
@@ -149,7 +149,7 @@ bool twpair_on_jis(uint16_t keycode, keyrecord_t *record) {
     if (us2jis[i][0] == skeycode) {
       /* 該当コードがある場合 */
 #ifdef CONSOLE_ENABLE
-      uprintf("pressed: %02X checked: %02X\n", keycode, skeycode);
+      uprintf("pressed: %02X checked: %02X count:%d\n", keycode, skeycode, i);
 #endif
 
       if (record->event.pressed) {
@@ -159,13 +159,13 @@ bool twpair_on_jis(uint16_t keycode, keyrecord_t *record) {
           if (lshift || rshift) {
             /* 前回のキーを取り下げ */
             unregister_code(us2jis[is_shift_jis_last][1]);
-            if (!((us2jis[is_shift_jis_last][1] & QK_LSFT) == QK_LSFT || (us2jis[is_shift_jis_last][1] & QK_RSFT) == QK_RSFT)) {
+            if (!((us2jis[is_shift_jis_last][1] & QK_LSFT) == QK_LSFT)) {
               if (lshift) register_code(KC_LSFT);
               if (rshift) register_code(KC_RSFT);
             }
           } else {
             unregister_code(us2jis[is_shift_jis_last][1]);
-            if ((us2jis[is_shift_jis_last][1] & QK_LSFT) == QK_LSFT || (us2jis[is_shift_jis_last][1] & QK_RSFT) == QK_RSFT)
+            if ((us2jis[is_shift_jis_last][1] & QK_LSFT) == QK_LSFT)
               unregister_code(KC_LSFT);
           }
         }
@@ -179,7 +179,7 @@ bool twpair_on_jis(uint16_t keycode, keyrecord_t *record) {
 #endif
 
         if (lshift || rshift) {
-          if (!((us2jis[i][1] & QK_LSFT) == QK_LSFT || (us2jis[i][1] & QK_RSFT) == QK_RSFT)) {
+          if (!((us2jis[i][1] & QK_LSFT) == QK_LSFT)) {
             if (lshift) unregister_code(KC_LSFT);
             if (rshift) unregister_code(KC_RSFT);
           }
@@ -187,12 +187,25 @@ bool twpair_on_jis(uint16_t keycode, keyrecord_t *record) {
            * @の場合、必ず英数入力にする
            */
           if (us2jis[i][1] == JP_AT) {
+#ifdef CONSOLE_ENABLE
+      uprintf("[%s:%d]\n", __func__, __LINE__);
+#endif
             tap_code(KC_MHEN);
             tap_code(KC_LANG2);
           }
           register_code(us2jis[i][1]);
         } else {
-          if ((us2jis[i][1] & QK_LSFT) == QK_LSFT || (us2jis[i][1] & QK_RSFT) == QK_RSFT) {
+          /*
+           * @の場合、必ず英数入力にする
+           */
+          if (us2jis[i][1] == JP_AT) {
+#ifdef CONSOLE_ENABLE
+      uprintf("[%s:%d]\n", __func__, __LINE__);
+#endif
+            tap_code(KC_MHEN);
+            tap_code(KC_LANG2);
+          }
+          if ((us2jis[i][1] & QK_LSFT) == QK_LSFT) {
             register_code(KC_LSFT);
           }
           register_code(us2jis[i][1]);
@@ -210,13 +223,13 @@ bool twpair_on_jis(uint16_t keycode, keyrecord_t *record) {
             /* 押し込みと同じ入力 */
             if (lshift || rshift) {
               unregister_code(us2jis[is_shift_jis_last][1]);
-              if (!((us2jis[is_shift_jis_last][1] & QK_LSFT) == QK_LSFT || (us2jis[is_shift_jis_last][1] & QK_RSFT) == QK_RSFT)) {
+              if (!((us2jis[is_shift_jis_last][1] & QK_LSFT) == QK_LSFT)) {
                 if (lshift) register_code(KC_LSFT);
                 if (rshift) register_code(KC_RSFT);
               }
             } else {
               unregister_code(us2jis[is_shift_jis_last][1]);
-              if ((us2jis[i][1] & QK_LSFT) == QK_LSFT || (us2jis[i][1] & QK_RSFT) == QK_RSFT)
+              if ((us2jis[i][1] & QK_LSFT) == QK_LSFT)
                 unregister_code(KC_LSFT);
             }
             is_shift_jis_key = false;
@@ -231,13 +244,13 @@ bool twpair_on_jis(uint16_t keycode, keyrecord_t *record) {
   if (is_shift_jis_key) {
     if (lshift || rshift) {
       unregister_code(us2jis[is_shift_jis_last][1]);
-      if (!((us2jis[is_shift_jis_last][1] & QK_LSFT) == QK_LSFT || (us2jis[is_shift_jis_last][1] & QK_RSFT) == QK_RSFT)) {
+      if (!((us2jis[is_shift_jis_last][1] & QK_LSFT) == QK_LSFT)) {
         if (lshift) register_code(KC_LSFT);
         if (rshift) register_code(KC_RSFT);
       }
     } else {
       unregister_code(us2jis[is_shift_jis_last][1]);
-      if ((us2jis[is_shift_jis_last][1] & QK_LSFT) == QK_LSFT || (us2jis[is_shift_jis_last][1] & QK_RSFT) == QK_RSFT)
+      if ((us2jis[is_shift_jis_last][1] & QK_LSFT) == QK_LSFT)
         unregister_code(KC_LSFT);
     }
     is_shift_jis_key = false;
