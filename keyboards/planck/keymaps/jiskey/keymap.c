@@ -18,6 +18,15 @@
 #include "action_layer.h"
 #include "twpair_on_jis.h"
 
+typedef union {
+  uint32_t raw;
+  struct {
+    bool     jis_key_trans :1;
+  };
+} user_config_t;
+
+user_config_t user_config;
+
 // レイヤー
 enum preonic_layers {
   _QWERTY,        // デフォルトレイヤー(JIS配列で認識)
@@ -42,6 +51,7 @@ enum preonic_keycodes {
   MA_COL2,          // 2 column
   MA_COL3,          // 3 column
   MA_COL4,          // 4 column
+  JIS_TOG,          // JIS transrate toggle
 };
 
 // 特殊な動作のマクロ設定
@@ -76,13 +86,14 @@ enum user_macro {
   #define TAP_F1 FUNC1
 #endif
 
+#ifdef RGBLIGHT_ENABLE
 // LED用の各レイヤーで使用するLEDの番号と数と色を指定する。
 const rgblight_segment_t PROGMEM my_base_layer[] = RGBLIGHT_LAYER_SEGMENTS(   {0, 9, 0, 0, 0}    );
 const rgblight_segment_t PROGMEM my_lower_layer[] = RGBLIGHT_LAYER_SEGMENTS(  {0, 9, HSV_RED}  );
-const rgblight_segment_t PROGMEM my_lowers_layer[] = RGBLIGHT_LAYER_SEGMENTS(  {0, 9, HSV_RED}  );
+const rgblight_segment_t PROGMEM my_lowers_layer[] = RGBLIGHT_LAYER_SEGMENTS(  {0, 9, HSV_GREEN}  );
 const rgblight_segment_t PROGMEM my_raise_layer[] = RGBLIGHT_LAYER_SEGMENTS(  {0, 9, HSV_YELLOW}  );
 const rgblight_segment_t PROGMEM my_adjust_layer[] = RGBLIGHT_LAYER_SEGMENTS( {0, 9, HSV_WHITE}  );
-
+#endif
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
@@ -110,18 +121,18 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * ,-----------------------------------------------------------------------------------.
  * | `/~  |  1 ! |  2 @ |  3 # |  4 $ |  5 % |  6 ^ |  7 & |  8 * |  9 ( |  0 ) | \ |  |
  * |------+------+------+------+------+-------------+------+------+------+------+------|
- * |      |      |PrintS|      |      |  *   |   /  |  4   |  5   |  6   |      | ' "  |
+ * |      |      |PrintS|      |Ctrl+T|  *   |   /  |  4   |  5   |  6   |      | ' "  |
  * |------+------+------+------+------+------|------+------+------+------+------+------|
  * |      |      | DEL  | Bksp | Enter|  +   |   -  |  1   |  2   |  3   |  =   |      |
  * |------+------+------+------+------+------+------+------+------+------+------+------|
- * |      |      |      |      | XXXX |             |  0   |  .   |  ,   | "0x" |      |
+ * |      |      |      | App  | XXXX |             |  0   |  .   |  ,   | "0x" |      |
  * `-----------------------------------------------------------------------------------'
  */
 [_LOWER] = LAYOUT_planck_grid( \
   KC_GRV,  KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_BSLS, \
-  _______, _______, AL_PSCR, _______, _______, KC_PAST, KC_PSLS, KC_4,    KC_5,    KC_6,    _______, KC_QUOT, \
+  _______, _______, AL_PSCR, _______, C(KC_T), KC_PAST, KC_PSLS, KC_4,    KC_5,    KC_6,    _______, KC_QUOT, \
   SFT_LOW, _______, KC_DEL,  KC_BSPC, KC_ENT,  KC_PPLS, KC_PMNS, KC_1,    KC_2,    KC_3,    KC_PEQL, _______, \
-  _______, _______, _______, _______, XXXXXXX, _______, _______, KC_0,    KC_DOT,  KC_COMM, MA_0X,   _______  \
+  _______, _______, _______, KC_APP,  XXXXXXX, _______, _______, KC_0,    KC_DOT,  KC_COMM, MA_0X,   _______  \
 ),
 
 /* Lower + Shift
@@ -216,9 +227,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 /* Adjust (Lower + Raise)
  * ,-----------------------------------------------------------------------------------.
- * |      | COL1 | COL2 | COL3 | COL4 |Aud on|AudOff|AGnorm|AGswap|      |      |RESET |
+ * |      | COL1 | COL2 | COL3 | COL4 |Aud on|AudOff|AGnorm|AGswap|JIS_TG|      |RESET |
  * |------+------+------+------+------+-------------+------+------+------+------+------|
- * | XXXX | PLY1 | PLY2 |      |      |      |      |      |      |      |      |      |
+ * | XXXX | PLY1 | PLY2 |      |      |RG_TOG|      |      |      |      |      |      |
  * |------+------+------+------+------+------|------+------+------+------+------+------|
  * |      | SAVE1| SAVE2|ALT C |ALT V |      |      |      |      |MU_BT2| MUS_U|MU_BT2|
  * |------+------+------+------+------+------+------+------+------+------+------+------|
@@ -226,8 +237,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * `-----------------------------------------------------------------------------------'
  */
 [_ADJUST] = LAYOUT_planck_grid( \
-  _______, MA_COL1, MA_COL2, MA_COL3, MA_COL4, AU_ON,   AU_OFF,  AG_NORM, AG_SWAP, _______, _______, RESET,   \
-  XXXXXXX, DM_PLY1, DM_PLY2, _______, _______, _______, _______, _______, _______, _______, _______, _______, \
+  _______, MA_COL1, MA_COL2, MA_COL3, MA_COL4, AU_ON,   AU_OFF,  AG_NORM, AG_SWAP, JIS_TOG, _______, RESET,   \
+  XXXXXXX, DM_PLY1, DM_PLY2, _______, _______, RGB_TOG, _______, _______, _______, _______, _______, _______, \
   _______, DM_REC1, DM_REC2, AL_C,    AL_V,    _______, _______, _______, _______, KC_BTN1, KC_MS_U, KC_BTN2, \
   _______, DM_RSTP, DM_RSTP, _______, TGL_LOW, _______, _______, TGL_RIS, _______, KC_MS_L, KC_MS_D, KC_MS_R  \
 )
@@ -246,6 +257,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   float dmacro_key_song[][2]     = SONG(UNICODE_LINUX);
   float dmacro_end_song[][2]     = SONG(PLOVER_GOODBYE_SOUND);
   float dmacro_exec_song[][2]    = SONG(WORKMAN_SOUND);
+  float jiskey_on_song[][2]      = SONG(ONE_UP_SOUND);
+  float jiskey_off_song[][2]     = SONG(MARIO_GAMEOVER);
+  float start_up_song[][2]       = STARTUP_SONG;
 #endif
 
 
@@ -336,11 +350,26 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       }
       return false;
       break;
+    case JIS_TOG:
+      if (record->event.pressed) {
+        user_config.jis_key_trans ^= 1; // Toggles the status
+        eeconfig_update_user(user_config.raw); // Writes the new status to EEPROM
+#ifdef AUDIO_ENABLE
+        if (user_config.jis_key_trans)
+          PLAY_SONG(jiskey_on_song);
+        else
+          PLAY_SONG(jiskey_off_song);
+#endif
+      }
+      return false;
+      break;
   }
 
-  // type writer pairing on jis keyboard
-  if (!twpair_on_jis(keycode, record))
-    return false;
+  if (user_config.jis_key_trans) {
+    // type writer pairing on jis keyboard
+    if (!twpair_on_jis(keycode, record))
+      return false;
+  }
 
   return true;
 };
@@ -380,7 +409,7 @@ void dynamic_macro_play_user(int8_t direction)
 #endif
 }
 
-
+#ifdef RGBLIGHT_ENABLE
 const rgblight_segment_t* const PROGMEM my_rgb_layers[] = RGBLIGHT_LAYERS_LIST(
     my_base_layer,
     my_lower_layer,
@@ -388,11 +417,25 @@ const rgblight_segment_t* const PROGMEM my_rgb_layers[] = RGBLIGHT_LAYERS_LIST(
     my_raise_layer,
     my_adjust_layer
 );
+#endif
+
 void keyboard_post_init_user(void) {
+
+    // Read the user config from EEPROM
+    user_config.raw = eeconfig_read_user();
+
+#ifdef AUDIO_ENABLE
+    PLAY_SONG(start_up_song);
+#endif
+
+
+#ifdef RGBLIGHT_ENABLE
     rgblight_layers = my_rgb_layers;
     rgblight_set_layer_state(0, true);
+#endif
 }
 
+#ifdef RGBLIGHT_ENABLE
 // LEDのレイヤーとキーマップで指定したレイヤーを対応させる
 layer_state_t layer_state_set_user(layer_state_t state) {
     rgblight_set_layer_state(1, get_highest_layer(state) == _LOWER);
@@ -401,11 +444,14 @@ layer_state_t layer_state_set_user(layer_state_t state) {
     rgblight_set_layer_state(4, get_highest_layer(state) == _ADJUST);
 
     if (get_highest_layer(state) == _ADJUST) {
+#ifdef AUDIO_ENABLE
         PLAY_SONG(adjust_on_song);
+#endif
     }
 
     return state;
 }
+#endif
 
 // Tap danceの設定
 #ifdef TAP_DANCE_ENABLE

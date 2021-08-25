@@ -33,12 +33,13 @@
 
     #define STARTUP_SONG SONG(PLANCK_SOUND)
     // #define STARTUP_SONG SONG(NO_SOUND)
-
+#if 0
     #define DEFAULT_LAYER_SONGS { SONG(QWERTY_SOUND), \
                                   SONG(ONE_UP_SOUND), \
                                   SONG(COIN_SOUND), \
                                   SONG(DISNEY_SONG) \
                                 }
+#endif
 #endif
 
 #define MUSIC_MASK (keycode != KC_NO)
