@@ -448,13 +448,13 @@ void keyboard_post_init_user(void) {
 #endif
 }
 
-#ifdef RGBLIGHT_ENABLE
-// LEDのレイヤーとキーマップで指定したレイヤーを対応させる
 layer_state_t layer_state_set_user(layer_state_t state) {
+#ifdef RGBLIGHT_ENABLE
     rgblight_set_layer_state(1, get_highest_layer(state) == _LOWER);
     rgblight_set_layer_state(2, get_highest_layer(state) == _10KEY);
     rgblight_set_layer_state(3, get_highest_layer(state) == _RAISE);
     rgblight_set_layer_state(4, get_highest_layer(state) == _ADJUST);
+#endif
 
     if (get_highest_layer(state) == _ADJUST) {
 #ifdef AUDIO_ENABLE
@@ -464,7 +464,6 @@ layer_state_t layer_state_set_user(layer_state_t state) {
 
     return state;
 }
-#endif
 
 // Tap danceの設定
 #ifdef TAP_DANCE_ENABLE
