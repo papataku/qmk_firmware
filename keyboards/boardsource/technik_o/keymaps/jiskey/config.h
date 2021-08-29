@@ -71,6 +71,11 @@
 #endif
 #endif
 
+#ifdef MOUSEKEY_ENABLE
+#define MOUSEKEY_INTERVAL  22
+#define MOUSEKEY_WHEEL_INTERVAL 22
+#endif
+
 #pragma once
 
 

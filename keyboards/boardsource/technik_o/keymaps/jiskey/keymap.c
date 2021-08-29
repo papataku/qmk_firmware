@@ -565,7 +565,7 @@ void rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
                 rgb_matrix_set_color(i, RGB_PURPLE);
                 break;
             case _ADJUST:
-                rgb_matrix_set_color(i, RGB_WHITE);
+                rgb_matrix_set_color(i, 0x80, 0x80, 0x80);
                 break;
             default:
                 break;
