@@ -16,7 +16,11 @@
 
 #include QMK_KEYBOARD_H
 #include "action_layer.h"
+#ifdef KEY_OVERRIDE_ENABLE
+#include "keymap_jp.h"
+#else
 #include "twpair_on_jis.h"
+#endif
 
 typedef union {
   uint32_t raw;
@@ -31,7 +35,9 @@ user_config_t user_config;
 enum jiskey_layers {
   _QWERTY,        // デフォルトレイヤー(JIS配列で認識)
   _LOWER,
+#ifndef KEY_OVERRIDE_ENABLE
   _LOW_S,
+#endif
   _RAISE,
   _FUNC1,
   _FUNC2,
@@ -71,11 +77,16 @@ enum user_macro {
 #define ADJUST  MO(_ADJUST)           // ホールドでAdjustレイヤーをon
 #define FUNC1   MO(_FUNC1)            // ホールドでFunction1レイヤーをon
 #define FUNC2   MO(_FUNC2)            // ホールドでFunction2レイヤーをon
+#ifdef KEY_OVERRIDE_ENABLE
+#define SFT_LOW KC_LSFT
+#else
 #define SFT_LOW MO(_LOW_S)            // ホールドでShift+Lowレイヤーをon
+#endif
 #define AL_PSCR LALT(KC_PSCR)         // ALT + PrintScreen
 #define AL_C    LALT(KC_C)            // ALT + C
 #define AL_V    LALT(KC_V)            // ALT + V
 #define WS_S    SGUI(KC_S)            // WIN + Shift + S
+#define OVR_TGL KEY_OVERRIDE_TOGGLE
 
 // Tap Danceの設定
 #ifdef TAP_DANCE_ENABLE
@@ -94,6 +105,52 @@ const rgblight_segment_t PROGMEM my_lower_layer[] = RGBLIGHT_LAYER_SEGMENTS(  {0
 const rgblight_segment_t PROGMEM my_lowers_layer[] = RGBLIGHT_LAYER_SEGMENTS(  {0, 9, HSV_GREEN}  );
 const rgblight_segment_t PROGMEM my_raise_layer[] = RGBLIGHT_LAYER_SEGMENTS(  {0, 9, HSV_YELLOW}  );
 const rgblight_segment_t PROGMEM my_adjust_layer[] = RGBLIGHT_LAYER_SEGMENTS( {0, 9, HSV_WHITE}  );
+#endif
+
+#ifdef KEY_OVERRIDE_ENABLE
+#define KO_LAYER ~0
+#if 1
+#define MAKE_KO(from, to) (QK_LSFT & (from)) \
+                           ? (&ko_make_basic(MOD_MASK_SHIFT, (QK_LSFT ^ (from)), (to))) \
+                           : (&ko_make_with_layers_and_negmods(0, (from), (to), KO_LAYER, (uint8_t) MOD_MASK_SHIFT))
+#define MAKE_KO_NS(from, to) (&ko_make_basic(0, (from), (to)))
+#else
+#define MAKE_KO(from, to) (&ko_make_with_layers_and_negmods((QK_LSFT & (from)) ? MOD_MASK_SHIFT : 0, (QK_LSFT ^ (from)), (to), KO_LAYER, (QK_LSFT & (to)) ? 0 : MOD_MASK_SHIFT))
+#define MAKE_KO_NS(from, to) (&ko_make_basic(MOD_MASK_SHIFT, (from), (to)))
+#endif
+const key_override_t **key_overrides = (const key_override_t *[]){
+	(&ko_make_with_layers_and_negmods(MOD_MASK_SHIFT, KC_6, JP_LCBR, 1<<_LOWER, 0)),		// _LOWER layer {
+	(&ko_make_with_layers_and_negmods(MOD_MASK_SHIFT, KC_SCLN, JP_RCBR, 1<<_LOWER, 0)),		// _LOWER layer }
+	(&ko_make_with_layers_and_negmods(MOD_MASK_SHIFT, KC_3, JP_LBRC, 1<<_LOWER, 0)),		// _LOWER layer [
+	(&ko_make_with_layers_and_negmods(MOD_MASK_SHIFT, KC_PEQL, JP_RBRC, 1<<_LOWER, 0)),		// _LOWER layer ]
+	(&ko_make_with_layers_and_negmods(0, KC_LCBR, JP_LCBR, 1<<_RAISE, 0)),		// _RAISE layer {
+	(&ko_make_with_layers_and_negmods(0, KC_RCBR, JP_RCBR, 1<<_RAISE, 0)),		// _RAISE layer }
+	(&ko_make_with_layers_and_negmods(0, KC_LBRC, JP_LBRC, 1<<_RAISE, 0)),		// _RAISE layer [
+	(&ko_make_with_layers_and_negmods(0, KC_RBRC, JP_RBRC, 1<<_RAISE, 0)),		// _RAISE layer ]
+	MAKE_KO(KC_LPRN, JP_LPRN),
+	MAKE_KO(KC_RPRN, JP_RPRN),
+	MAKE_KO(KC_AT,   JP_AT),
+	MAKE_KO(KC_LBRC, JP_LBRC),
+	MAKE_KO(KC_RBRC, JP_RBRC),
+	MAKE_KO(KC_LCBR, JP_LCBR),
+	MAKE_KO(KC_RCBR, JP_RCBR),
+	MAKE_KO(KC_MINS, JP_MINS),
+	MAKE_KO(KC_EQL,  JP_EQL),
+	MAKE_KO(KC_BSLS, JP_BSLS),
+	MAKE_KO(KC_SCLN, JP_SCLN),
+	MAKE_KO(KC_QUOT, JP_QUOT),
+	MAKE_KO(KC_GRV,  JP_GRV),
+	MAKE_KO(KC_PLUS, JP_PLUS),
+	MAKE_KO(KC_COLN, JP_COLN),
+	MAKE_KO(KC_UNDS, JP_UNDS),
+	MAKE_KO(KC_PIPE, JP_PIPE),
+	MAKE_KO(KC_DQT,  JP_DQUO),
+	MAKE_KO(KC_ASTR, JP_ASTR),
+	MAKE_KO(KC_TILD, JP_TILD),
+	MAKE_KO(KC_AMPR, JP_AMPR),
+	MAKE_KO(KC_CIRC, JP_CIRC),
+    NULL
+};
 #endif
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -122,20 +179,20 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * ,-----------------------------------------------------------------------------------.
  * | `/~  |  1 ! |  2 @ |  3 # |  4 $ |  5 % |  6 ^ |  7 & |  8 * |  9 ( |  0 ) | \ |  |
  * |------+------+------+------+------+-------------+------+------+------+------+------|
- * |      |      |PrintS|      |Ctrl+T|  *   |   /  |  4   |  5   |  6   |      | ' "  |
+ * |      |      |PrintS|      |Ctrl+T|  *   |   /  |  4   |  5   |  6 { |  ; } | ' "  |
  * |------+------+------+------+------+------|------+------+------+------+------+------|
- * |      |      | DEL  | Bksp | Enter|  +   |   -  |  1   |  2   |  3   |  =   |      |
+ * |      |      | DEL  | Bksp | Enter|  +   |   -  |  1   |  2   |  3 [ |  = ] |      |
  * |------+------+------+------+------+------+------+------+------+------+------+------|
  * |      |      |      | App  | XXXX |             |  0   |  .   |  ,   | "0x" |      |
  * `-----------------------------------------------------------------------------------'
  */
 [_LOWER] = LAYOUT_ortho_4x12( \
   KC_GRV,  KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_BSLS, \
-  _______, _______, AL_PSCR, _______, C(KC_T), KC_PAST, KC_PSLS, KC_4,    KC_5,    KC_6,    _______, KC_QUOT, \
+  _______, _______, AL_PSCR, _______, C(KC_T), KC_PAST, KC_PSLS, KC_4,    KC_5,    KC_6,    KC_SCLN, KC_QUOT, \
   SFT_LOW, _______, KC_DEL,  KC_BSPC, KC_ENT,  KC_PPLS, KC_PMNS, KC_1,    KC_2,    KC_3,    KC_PEQL, _______, \
   _______, _______, _______, KC_APP,  XXXXXXX, _______, _______, KC_0,    KC_DOT,  KC_COMM, MA_0X,   _______  \
 ),
-
+#ifndef KEY_OVERRIDE_ENABLE
 /* Lower + Shift
  * ,-----------------------------------------------------------------------------------.
  * |      |      |      |      |      |      |      |      |      | (    | )    |      |
@@ -153,7 +210,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   XXXXXXX, _______, _______, _______, _______, _______, _______, _______, _______, KC_LBRC, KC_RBRC, _______, \
   _______, _______, _______, _______, XXXXXXX, _______, _______, _______, _______, _______, _______, _______  \
 ),
-
+#endif
 /* Raise
  * ,-----------------------------------------------------------------------------------.
  * |      |  F1  |  F2  |  F3  |  F4  |      |      |   =  |PrintS|   {  |   }  | Del  |
@@ -230,7 +287,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * ,-----------------------------------------------------------------------------------.
  * |      | COL1 | COL2 | COL3 | COL4 |Aud on|AudOff|AGnorm|AGswap|JIS_TG|      |RESET |
  * |------+------+------+------+------+-------------+------+------+------+------+------|
- * | XXXX | PLY1 | PLY2 |      |      |RG_TOG|RG_MOD|      |      |      |      |      |
+ * | XXXX | PLY1 | PLY2 |      |      |RG_TOG|RG_MOD|      |      |OVR_TG|      |      |
  * |------+------+------+------+------+------|------+------+------+------+------+------|
  * |      | SAVE1| SAVE2|ALT C |ALT V |      |      |      |      |MU_BT2| MUS_U|MU_BT2|
  * |------+------+------+------+------+------+------+------+------+------+------+------|
@@ -239,7 +296,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  */
 [_ADJUST] = LAYOUT_ortho_4x12( \
   _______, MA_COL1, MA_COL2, MA_COL3, MA_COL4, AU_ON,   AU_OFF,  AG_NORM, AG_SWAP, JIS_TOG, _______, RESET,   \
-  XXXXXXX, DM_PLY1, DM_PLY2, _______, _______, RGB_TOG, RGB_MOD, _______, _______, _______, _______, _______, \
+  XXXXXXX, DM_PLY1, DM_PLY2, _______, _______, RGB_TOG, RGB_MOD, _______, _______, OVR_TGL, _______, _______, \
   _______, DM_REC1, DM_REC2, AL_C,    AL_V,    _______, _______, _______, _______, KC_BTN1, KC_MS_U, KC_BTN2, \
   _______, DM_RSTP, DM_RSTP, _______, TGL_LOW, _______, _______, TGL_RIS, _______, KC_MS_L, KC_MS_D, KC_MS_R  \
 )
@@ -375,11 +432,13 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       break;
   }
 
+#ifndef KEY_OVERRIDE_ENABLE
   if (user_config.jis_key_trans) {
     // type writer pairing on jis keyboard
     if (!twpair_on_jis(keycode, record))
       return false;
   }
+#endif
 
   return true;
 };
@@ -552,9 +611,11 @@ void rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
             case _LOWER:
                 rgb_matrix_set_color(i, RGB_YELLOW);
                 break;
+#ifndef KEY_OVERRIDE_ENABLE
             case _LOW_S:
                 rgb_matrix_set_color(i, RGB_YELLOW);
                 break;
+#endif
             case _FUNC1:
                 rgb_matrix_set_color(i, RGB_CYAN);
                 break;
