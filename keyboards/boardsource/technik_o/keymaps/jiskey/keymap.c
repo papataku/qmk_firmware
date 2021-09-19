@@ -109,15 +109,10 @@ const rgblight_segment_t PROGMEM my_adjust_layer[] = RGBLIGHT_LAYER_SEGMENTS( {0
 
 #ifdef KEY_OVERRIDE_ENABLE
 #define KO_LAYER ~0
-#if 1
 #define MAKE_KO(from, to) (QK_LSFT & (from)) \
                            ? (&ko_make_basic(MOD_MASK_SHIFT, (QK_LSFT ^ (from)), (to))) \
                            : (&ko_make_with_layers_and_negmods(0, (from), (to), KO_LAYER, (uint8_t) MOD_MASK_SHIFT))
 #define MAKE_KO_NS(from, to) (&ko_make_basic(0, (from), (to)))
-#else
-#define MAKE_KO(from, to) (&ko_make_with_layers_and_negmods((QK_LSFT & (from)) ? MOD_MASK_SHIFT : 0, (QK_LSFT ^ (from)), (to), KO_LAYER, (QK_LSFT & (to)) ? 0 : MOD_MASK_SHIFT))
-#define MAKE_KO_NS(from, to) (&ko_make_basic(MOD_MASK_SHIFT, (from), (to)))
-#endif
 const key_override_t **key_overrides = (const key_override_t *[]){
 	(&ko_make_with_layers_and_negmods(MOD_MASK_SHIFT, KC_6, JP_LCBR, 1<<_LOWER, 0)),		// _LOWER layer {
 	(&ko_make_with_layers_and_negmods(MOD_MASK_SHIFT, KC_SCLN, JP_RCBR, 1<<_LOWER, 0)),		// _LOWER layer }
@@ -323,7 +318,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   static uint8_t l_r_layer;
-  
+
   switch (keycode) {
     case TGL_LOW:                           // Lower/Raiseにトグル
     case TGL_RIS:
