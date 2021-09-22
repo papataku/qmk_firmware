@@ -9,7 +9,5 @@ KEY_OVERRIDE_ENABLE = yes
 
 CONSOLE_ENABLE = no         # Console for debug(+400)
 
-ifneq ($(strip $(KEY_OVERRIDE_ENABLE)), yes)
-  SRC +=  twpair_on_jis.c
-endif
+SRC +=  twpair_on_jis.c
 

@@ -16,16 +16,15 @@
 
 #include QMK_KEYBOARD_H
 #include "action_layer.h"
-#ifdef KEY_OVERRIDE_ENABLE
 #include "keymap_jp.h"
-#else
 #include "twpair_on_jis.h"
-#endif
+
+#define LAYOUT_ortho_grid LAYOUT_ortho_4x12
 
 typedef union {
   uint32_t raw;
   struct {
-    bool     jis_key_trans :1;
+    uint8_t     jis_key_trans :2;
   };
 } user_config_t;
 
@@ -35,9 +34,7 @@ user_config_t user_config;
 enum jiskey_layers {
   _QWERTY,        // デフォルトレイヤー(JIS配列で認識)
   _LOWER,
-#ifndef KEY_OVERRIDE_ENABLE
   _LOW_S,
-#endif
   _RAISE,
   _FUNC1,
   _FUNC2,
@@ -77,16 +74,14 @@ enum user_macro {
 #define ADJUST  MO(_ADJUST)           // ホールドでAdjustレイヤーをon
 #define FUNC1   MO(_FUNC1)            // ホールドでFunction1レイヤーをon
 #define FUNC2   MO(_FUNC2)            // ホールドでFunction2レイヤーをon
-#ifdef KEY_OVERRIDE_ENABLE
-#define SFT_LOW KC_LSFT
-#else
 #define SFT_LOW MO(_LOW_S)            // ホールドでShift+Lowレイヤーをon
-#endif
 #define AL_PSCR LALT(KC_PSCR)         // ALT + PrintScreen
 #define AL_C    LALT(KC_C)            // ALT + C
 #define AL_V    LALT(KC_V)            // ALT + V
 #define WS_S    SGUI(KC_S)            // WIN + Shift + S
-#define OVR_TGL KEY_OVERRIDE_TOGGLE
+#ifdef KEY_OVERRIDE_ENABLE
+#define JIS_TOG KEY_OVERRIDE_TOGGLE
+#endif
 
 // Tap Danceの設定
 #ifdef TAP_DANCE_ENABLE
@@ -112,38 +107,42 @@ const rgblight_segment_t PROGMEM my_adjust_layer[] = RGBLIGHT_LAYER_SEGMENTS( {0
 #define MAKE_KO(from, to) (QK_LSFT & (from)) \
                            ? (&ko_make_basic(MOD_MASK_SHIFT, (QK_LSFT ^ (from)), (to))) \
                            : (&ko_make_with_layers_and_negmods(0, (from), (to), KO_LAYER, (uint8_t) MOD_MASK_SHIFT))
-#define MAKE_KO_NS(from, to) (&ko_make_basic(0, (from), (to)))
+#define MAKE_KO_DIR(from, to, layer) (&ko_make_with_layers_negmods_and_options(0, (from), (to), (layer), MOD_MASK_CSA, ko_option_activation_trigger_down))
+#define MAKE_KO_LOW(from, to) MAKE_KO_DIR(from, to, 1<<_LOW_S)
+#define MAKE_KO_RAI(from, to) MAKE_KO_DIR(from, to, 1<<_RAISE)
+//#define MAKE_KO_LOW(from, to) (&ko_make_with_layers_and_negmods(0, (from), (to), 1<<_LOW_S, MOD_MASK_SHIFT))
+//#define MAKE_KO_RAI(from, to) (&ko_make_with_layers_and_negmods(0, (from), (to), 1<<_RAISE, MOD_MASK_SHIFT))
 const key_override_t **key_overrides = (const key_override_t *[]){
-	(&ko_make_with_layers_and_negmods(MOD_MASK_SHIFT, KC_6, JP_LCBR, 1<<_LOWER, 0)),		// _LOWER layer {
-	(&ko_make_with_layers_and_negmods(MOD_MASK_SHIFT, KC_SCLN, JP_RCBR, 1<<_LOWER, 0)),		// _LOWER layer }
-	(&ko_make_with_layers_and_negmods(MOD_MASK_SHIFT, KC_3, JP_LBRC, 1<<_LOWER, 0)),		// _LOWER layer [
-	(&ko_make_with_layers_and_negmods(MOD_MASK_SHIFT, KC_PEQL, JP_RBRC, 1<<_LOWER, 0)),		// _LOWER layer ]
-	(&ko_make_with_layers_and_negmods(0, KC_LCBR, JP_LCBR, 1<<_RAISE, 0)),		// _RAISE layer {
-	(&ko_make_with_layers_and_negmods(0, KC_RCBR, JP_RCBR, 1<<_RAISE, 0)),		// _RAISE layer }
-	(&ko_make_with_layers_and_negmods(0, KC_LBRC, JP_LBRC, 1<<_RAISE, 0)),		// _RAISE layer [
-	(&ko_make_with_layers_and_negmods(0, KC_RBRC, JP_RBRC, 1<<_RAISE, 0)),		// _RAISE layer ]
-	MAKE_KO(KC_LPRN, JP_LPRN),
-	MAKE_KO(KC_RPRN, JP_RPRN),
-	MAKE_KO(KC_AT,   JP_AT),
-	MAKE_KO(KC_LBRC, JP_LBRC),
-	MAKE_KO(KC_RBRC, JP_RBRC),
-	MAKE_KO(KC_LCBR, JP_LCBR),
-	MAKE_KO(KC_RCBR, JP_RCBR),
-	MAKE_KO(KC_MINS, JP_MINS),
-	MAKE_KO(KC_EQL,  JP_EQL),
-	MAKE_KO(KC_BSLS, JP_BSLS),
-	MAKE_KO(KC_SCLN, JP_SCLN),
-	MAKE_KO(KC_QUOT, JP_QUOT),
-	MAKE_KO(KC_GRV,  JP_GRV),
-	MAKE_KO(KC_PLUS, JP_PLUS),
-	MAKE_KO(KC_COLN, JP_COLN),
-	MAKE_KO(KC_UNDS, JP_UNDS),
-	MAKE_KO(KC_PIPE, JP_PIPE),
-	MAKE_KO(KC_DQT,  JP_DQUO),
-	MAKE_KO(KC_ASTR, JP_ASTR),
-	MAKE_KO(KC_TILD, JP_TILD),
-	MAKE_KO(KC_AMPR, JP_AMPR),
-	MAKE_KO(KC_CIRC, JP_CIRC),
+	MAKE_KO_LOW(KC_TILD, JP_TILD),      // ~
+	MAKE_KO_LOW(KC_AT,   JP_AT),        // @
+    MAKE_KO_LOW(KC_CIRC, JP_CIRC),      // ^
+	MAKE_KO_LOW(KC_AMPR, JP_AMPR),      // &
+	MAKE_KO_LOW(KC_ASTR, JP_ASTR),      // *
+	MAKE_KO_LOW(KC_LPRN, JP_LPRN),      // (
+	MAKE_KO_LOW(KC_RPRN, JP_RPRN),      // )
+	MAKE_KO_LOW(KC_PIPE, JP_PIPE),      // |
+	MAKE_KO_LOW(KC_DQT,  JP_DQUO),      // "
+	MAKE_KO_LOW(KC_LCBR, JP_LCBR),      // {
+	MAKE_KO_LOW(KC_RCBR, JP_RCBR),      // }
+	MAKE_KO_LOW(KC_LBRC, JP_LBRC),      // [
+	MAKE_KO_LOW(KC_RBRC, JP_RBRC),      // ]
+
+	MAKE_KO_RAI(KC_LCBR, JP_LCBR),      // {
+	MAKE_KO_RAI(KC_RCBR, JP_RCBR),      // }
+	MAKE_KO_RAI(KC_LBRC, JP_LBRC),      // [
+	MAKE_KO_RAI(KC_RBRC, JP_RBRC),      // ]
+	MAKE_KO_RAI(KC_EQL,  JP_EQL),       // =
+	MAKE_KO_RAI(KC_PLUS, JP_PLUS),      // +
+	MAKE_KO_RAI(KC_MINS, JP_MINS),      // -
+	MAKE_KO_RAI(KC_ASTR, JP_ASTR),      // *
+	MAKE_KO_RAI(KC_UNDS, JP_UNDS),      // _
+
+	MAKE_KO(KC_BSLS, JP_BSLS),          /* \ */
+	MAKE_KO(KC_SCLN, JP_SCLN),          // ;
+	MAKE_KO(KC_QUOT, JP_QUOT),          // '
+	MAKE_KO(KC_GRV,  JP_GRV),           // `
+	MAKE_KO(KC_COLN, JP_COLN),          // :
+
     NULL
 };
 #endif
@@ -154,14 +153,14 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * ,-----------------------------------------------------------------------------------.
  * | Tab  |   Q  |   W  |   E  |   R  |   T  |   Y  |   U  |   I  |   O  |   P  | Bksp |
  * |------+------+------+------+------+-------------+------+------+------+------+------|
- * |ADJUST|   A  |   S  |   D  |   F  |   G  |   H  |   J  |   K  |   L  |   ;  | Enter|
+ * |ADJUST|   A  |   S  |   D  |   F  |   G  |   H  |   J  |   K  |   L  |  ; : | Enter|
  * |------+------+------+------+------+------|------+------+------+------+------+------|
- * | Shift|   Z  |   X  |   C  |   V  |   B  |   N  |   M  |   ,  |   .  |  Up  | /    |
+ * | Shift|   Z  |   X  |   C  |   V  |   B  |   N  |   M  |  , < |  . > |  Up  | /  ? |
  * |------+------+------+------+------+------+------+------+------+------+------+------|
  * | Ctrl | GUI  | Alt  | Fn2  |Eng/Lo|    Space    |Jpn/Ra| Fn1  | Left | Down |Right |
  * `-----------------------------------------------------------------------------------'
  */
-[_QWERTY] = LAYOUT_ortho_4x12( \
+[_QWERTY] = LAYOUT_ortho_grid( \
   KC_TAB,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_BSPC,  \
   M_ECAJ,  KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_ENT, \
   KC_LSFT, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_UP,   KC_SLSH,  \
@@ -172,22 +171,22 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 /* Lower
  * ,-----------------------------------------------------------------------------------.
- * | `/~  |  1 ! |  2 @ |  3 # |  4 $ |  5 % |  6 ^ |  7 & |  8 * |  9 ( |  0 ) | \ |  |
+ * | ` ~  |  1 ! |  2 @ |  3 # |  4 $ |  5 % |  6 ^ |  7 & |  8 * |  9 ( |  0 ) | \ |  |
  * |------+------+------+------+------+-------------+------+------+------+------+------|
- * |      |      |PrintS|      |Ctrl+T|  *   |   /  |  4   |  5   |  6 { |  ; } | ' "  |
+ * |      |      |PrintS|      |Ctrl+T|      |      |  4   |  5   |  6 { |    } | ' "  |
  * |------+------+------+------+------+------|------+------+------+------+------+------|
- * |      |      | DEL  | Bksp | Enter|  +   |   -  |  1   |  2   |  3 [ |  = ] |      |
+ * |      |      | DEL  | Bksp | Enter|      |      |  1   |  2   |  3 [ |    ] |      |
  * |------+------+------+------+------+------+------+------+------+------+------+------|
  * |      |      |      | App  | XXXX |             |  0   |  .   |  ,   | "0x" |      |
  * `-----------------------------------------------------------------------------------'
  */
-[_LOWER] = LAYOUT_ortho_4x12( \
+[_LOWER] = LAYOUT_ortho_grid( \
   KC_GRV,  KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_BSLS, \
-  _______, _______, AL_PSCR, _______, C(KC_T), KC_PAST, KC_PSLS, KC_4,    KC_5,    KC_6,    KC_SCLN, KC_QUOT, \
-  SFT_LOW, _______, KC_DEL,  KC_BSPC, KC_ENT,  KC_PPLS, KC_PMNS, KC_1,    KC_2,    KC_3,    KC_PEQL, _______, \
+  _______, _______, AL_PSCR, _______, C(KC_T), _______, _______, KC_4,    KC_5,    KC_6,    _______, KC_QUOT, \
+  SFT_LOW, _______, KC_DEL,  KC_BSPC, KC_ENT,  _______, _______, KC_1,    KC_2,    KC_3,    _______, _______, \
   _______, _______, _______, KC_APP,  XXXXXXX, _______, _______, KC_0,    KC_DOT,  KC_COMM, MA_0X,   _______  \
 ),
-#ifndef KEY_OVERRIDE_ENABLE
+
 /* Lower + Shift
  * ,-----------------------------------------------------------------------------------.
  * |      |      |      |      |      |      |      |      |      | (    | )    |      |
@@ -199,27 +198,27 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * |      |      |      |      |      |             |      |      |      |      |      |
  * `-----------------------------------------------------------------------------------'
  */
-[_LOW_S] = LAYOUT_ortho_4x12( \
- S(KC_GRV),S(KC_1), S(KC_2), S(KC_3), S(KC_4), S(KC_5), S(KC_6), S(KC_7), S(KC_8), KC_LPRN, KC_RPRN, S(KC_BSLS), \
-  _______, _______, _______, _______, _______, _______, _______, _______, _______, KC_LCBR, KC_RCBR, S(KC_QUOT), \
+[_LOW_S] = LAYOUT_ortho_grid( \
+  KC_TILD, KC_EXLM, KC_AT,   KC_HASH, KC_DLR,  KC_PERC, KC_CIRC, KC_AMPR, KC_ASTR, KC_LPRN, KC_RPRN, KC_PIPE, \
+  _______, _______, _______, _______, _______, _______, _______, _______, _______, KC_LCBR, KC_RCBR, KC_DQT, \
   XXXXXXX, _______, _______, _______, _______, _______, _______, _______, _______, KC_LBRC, KC_RBRC, _______, \
   _______, _______, _______, _______, XXXXXXX, _______, _______, _______, _______, _______, _______, _______  \
 ),
-#endif
+
 /* Raise
  * ,-----------------------------------------------------------------------------------.
  * |      |  F1  |  F2  |  F3  |  F4  |      |      |   =  |PrintS|   {  |   }  | Del  |
  * |------+------+------+------+------+-------------+------+------+------+------+------|
- * |      |  F5  |  F6  |  F7  |  F8  |      |   +  |   -  |      |   [  |   ]  | ' "  |
+ * |      |  F5  |  F6  |  F7  |  F8  |      |   +  |   -  |      |   [  |   ]  |      |
  * |------+------+------+------+------+------|------+------+------+------+------+------|
  * |      |  F9  |  F10 |  F11 |  F12 |      |   *  |   _  | HOME | END  | PGUP | PGDN |
  * |------+------+------+------+------+------+------+------+------+------+------+------|
  * |      |      |      |      |      |             | XXXX | App  |      |      |      |
  * `-----------------------------------------------------------------------------------'
  */
-[_RAISE] = LAYOUT_ortho_4x12( \
+[_RAISE] = LAYOUT_ortho_grid( \
   _______, KC_F1,   KC_F2,   KC_F3,   KC_F4,   _______, _______, KC_EQL,  AL_PSCR, KC_LCBR, KC_RCBR, KC_DEL, \
-  _______, KC_F5,   KC_F6,   KC_F7,   KC_F8,   _______, KC_PLUS, KC_MINS, _______, KC_LBRC, KC_RBRC, KC_QUOT, \
+  _______, KC_F5,   KC_F6,   KC_F7,   KC_F8,   _______, KC_PLUS, KC_MINS, _______, KC_LBRC, KC_RBRC, _______, \
   _______, KC_F9,   KC_F10,  KC_F11,  KC_F12,  _______, KC_PAST, KC_UNDS, KC_HOME, KC_END,  KC_PGUP, KC_PGDN, \
   _______, _______, _______, _______, _______, _______, XXXXXXX, _______, KC_APP,  _______, _______, _______  \
 ),
@@ -235,7 +234,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * |      |      |      |      |      |             |      | XXXX |      |      |      |
  * `-----------------------------------------------------------------------------------'
  */
-[_FUNC1] = LAYOUT_ortho_4x12( \
+[_FUNC1] = LAYOUT_ortho_grid( \
   KC_ESC,  _______, _______, _______, _______, _______, _______, _______, AL_PSCR, _______, KC_WH_U, KC_DEL, \
   _______, _______, _______, _______, _______, _______, _______, _______, _______, KC_WH_L, KC_WH_D, KC_WH_R, \
   _______, _______, _______, _______, _______, _______, _______, _______, KC_PGUP, KC_PGDN, _______, KC_BTN2, \
@@ -253,7 +252,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * |      |      |      | XXXX |      |             |      |      |      |      |      |
  * `-----------------------------------------------------------------------------------'
  */
-[_FUNC2] = LAYOUT_ortho_4x12( \
+[_FUNC2] = LAYOUT_ortho_grid( \
   KC_ESC,  KC_F1,   KC_F2,   KC_F3,   KC_F4,   _______, _______, _______, _______, _______, _______, KC_BSPC, \
   _______, KC_F5,   KC_F6,   KC_F7,   KC_F8,   _______, _______, _______, _______, _______, _______, _______, \
   _______, KC_F9,   KC_F10,  KC_F11 , KC_F12,  _______, _______, _______, _______, _______, _______, _______, \
@@ -264,34 +263,34 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * ,-----------------------------------------------------------------------------------.
  * |      |      |      |      |      |      |      |  7   |  8   |  9   |      |      |
  * |------+------+------+------+------+-------------+------+------+------+------+------|
- * |      |      |      |      |      |      |   /  |  4   |  5   |  6   |  *   |      |
+ * |      |      |      |      |      |      |      |  4   |  5   |  6   |      |      |
  * |------+------+------+------+------+------|------+------+------+------+------+------|
- * |      |      |      |      |      |      |   -  |  1   |  2   |  3   |  +   |      |
+ * |      |      |      |      |      |      |      |  1   |  2   |  3   |      |      |
  * |------+------+------+------+------+------+------+------+------+------+------+------|
  * |      |      |      |      |      |             |  0   |  .   |  ,   |      |      |
  * `-----------------------------------------------------------------------------------'
  */
-[_10KEY] = LAYOUT_ortho_4x12( \
+[_10KEY] = LAYOUT_ortho_grid( \
   _______, _______, _______, _______, _______, _______, _______, KC_7,    KC_8,    KC_9,    _______, _______, \
-  _______, _______, _______, _______, _______, _______, KC_PSLS, KC_4,    KC_5,    KC_6,    KC_PAST, _______, \
-  _______, _______, _______, _______, _______, _______, KC_PMNS, KC_1,    KC_2,    KC_3,    KC_PPLS, _______, \
-  _______, _______, _______, _______, EXT_10K, _______, _______, KC_0,    KC_DOT,  KC_COMM, _______, EXT_10K   \
+  _______, _______, _______, _______, _______, _______, _______, KC_4,    KC_5,    KC_6,    _______, _______, \
+  _______, _______, _______, _______, _______, _______, _______, KC_1,    KC_2,    KC_3,    _______, _______, \
+  _______, _______, _______, _______, EXT_10K, _______, _______, KC_0,    KC_DOT,  KC_COMM, _______, EXT_10K  \
 ),
 
 /* Adjust (Lower + Raise)
  * ,-----------------------------------------------------------------------------------.
  * |      | COL1 | COL2 | COL3 | COL4 |Aud on|AudOff|AGnorm|AGswap|JIS_TG|      |RESET |
  * |------+------+------+------+------+-------------+------+------+------+------+------|
- * | XXXX | PLY1 | PLY2 |      |      |RG_TOG|RG_MOD|      |      |OVR_TG|      |      |
+ * | XXXX | PLY1 | PLY2 |      |      |RG_TOG|RG_MOD|RG_HUD|RG_HUI|      |      |      |
  * |------+------+------+------+------+------|------+------+------+------+------+------|
  * |      | SAVE1| SAVE2|ALT C |ALT V |      |      |      |      |MU_BT2| MUS_U|MU_BT2|
  * |------+------+------+------+------+------+------+------+------+------+------+------|
  * |      | SAEND| SAEND|      |      |             |      |      | MUS_L| MUS_D| MUS_R|
  * `-----------------------------------------------------------------------------------'
  */
-[_ADJUST] = LAYOUT_ortho_4x12( \
+[_ADJUST] = LAYOUT_ortho_grid( \
   _______, MA_COL1, MA_COL2, MA_COL3, MA_COL4, AU_ON,   AU_OFF,  AG_NORM, AG_SWAP, JIS_TOG, _______, RESET,   \
-  XXXXXXX, DM_PLY1, DM_PLY2, _______, _______, RGB_TOG, RGB_MOD, _______, _______, OVR_TGL, _______, _______, \
+  XXXXXXX, DM_PLY1, DM_PLY2, _______, _______, RGB_TOG, RGB_MOD, RGB_HUD, RGB_HUI, _______, _______, _______, \
   _______, DM_REC1, DM_REC2, AL_C,    AL_V,    _______, _______, _______, _______, KC_BTN1, KC_MS_U, KC_BTN2, \
   _______, DM_RSTP, DM_RSTP, _______, TGL_LOW, _______, _______, TGL_RIS, _______, KC_MS_L, KC_MS_D, KC_MS_R  \
 )
@@ -405,10 +404,22 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       break;
     case JIS_TOG:
       if (record->event.pressed) {
-        user_config.jis_key_trans ^= 1; // Toggles the status
+        user_config.jis_key_trans += 1; // Toggles the status
+#ifdef KEY_OVERRIDE_ENABLE
+        if (3 == user_config.jis_key_trans)
+            user_config.jis_key_trans = 0;
+        if (2 == user_config.jis_key_trans)
+            key_override_on();
+        else
+            key_override_off();
+#else
+        if (2 == user_config.jis_key_trans)
+            user_config.jis_key_trans = 0;
+#endif
         eeconfig_update_user(user_config.raw); // Writes the new status to EEPROM
+
 #ifdef AUDIO_ENABLE
-        if (user_config.jis_key_trans)
+        if ((1 == user_config.jis_key_trans) || (2 == user_config.jis_key_trans))
           PLAY_SONG(jiskey_on_song);
         else
           PLAY_SONG(jiskey_off_song);
@@ -427,13 +438,11 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       break;
   }
 
-#ifndef KEY_OVERRIDE_ENABLE
-  if (user_config.jis_key_trans) {
+  if (1 == user_config.jis_key_trans) {
     // type writer pairing on jis keyboard
     if (!twpair_on_jis(keycode, record))
       return false;
   }
-#endif
 
   return true;
 };
@@ -490,6 +499,13 @@ void keyboard_post_init_user(void) {
 #endif
     // Read the user config from EEPROM
     user_config.raw = eeconfig_read_user();
+
+#ifdef KEY_OVERRIDE_ENABLE
+    if (2 == user_config.jis_key_trans)
+        key_override_on();
+    else
+        key_override_off();
+#endif
 
 #ifdef AUDIO_ENABLE
     PLAY_SONG(start_up_song);
@@ -606,11 +622,9 @@ void rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
             case _LOWER:
                 rgb_matrix_set_color(i, RGB_YELLOW);
                 break;
-#ifndef KEY_OVERRIDE_ENABLE
             case _LOW_S:
                 rgb_matrix_set_color(i, RGB_YELLOW);
                 break;
-#endif
             case _FUNC1:
                 rgb_matrix_set_color(i, RGB_CYAN);
                 break;
