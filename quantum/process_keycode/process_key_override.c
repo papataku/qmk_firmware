@@ -355,6 +355,8 @@ static bool try_activating_override(const uint16_t keycode, const uint8_t layer,
                 send_keyboard_report();
             } else {
                 if (IS_KEY(mod_free_replacement)) {
+                    send_keyboard_report();
+                    wait_ms(10);
                     add_key(mod_free_replacement);
                 } else {
                     key_override_printf("NOT KEY 2\n");
