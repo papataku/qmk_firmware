@@ -34,7 +34,6 @@ user_config_t user_config;
 enum jiskey_layers {
   _QWERTY,        // デフォルトレイヤー(JIS配列で認識)
   _LOWER,
-  _LOW_S,
   _RAISE,
   _FUNC1,
   _FUNC2,
@@ -74,7 +73,6 @@ enum user_macro {
 #define ADJUST  MO(_ADJUST)           // ホールドでAdjustレイヤーをon
 #define FUNC1   MO(_FUNC1)            // ホールドでFunction1レイヤーをon
 #define FUNC2   MO(_FUNC2)            // ホールドでFunction2レイヤーをon
-#define SFT_LOW MO(_LOW_S)            // ホールドでShift+Lowレイヤーをon
 #define AL_PSCR LALT(KC_PSCR)         // ALT + PrintScreen
 #define AL_C    LALT(KC_C)            // ALT + C
 #define AL_V    LALT(KC_V)            // ALT + V
@@ -108,7 +106,7 @@ const rgblight_segment_t PROGMEM my_adjust_layer[] = RGBLIGHT_LAYER_SEGMENTS( {0
                            ? (&ko_make_basic(MOD_MASK_SHIFT, (QK_LSFT ^ (from)), (to))) \
                            : (&ko_make_with_layers_and_negmods(0, (from), (to), KO_LAYER, (uint8_t) MOD_MASK_SHIFT))
 #define MAKE_KO_DIR(from, to, layer) (&ko_make_with_layers_negmods_and_options(0, (from), (to), (layer), MOD_MASK_CSA, ko_option_activation_trigger_down))
-#define MAKE_KO_LOW(from, to) MAKE_KO_DIR(from, to, 1<<_LOW_S)
+#define MAKE_KO_LOW(from, to) MAKE_KO_DIR(from, to, 1<<_LOWER)
 #define MAKE_KO_RAI(from, to) MAKE_KO_DIR(from, to, 1<<_RAISE)
 //#define MAKE_KO_LOW(from, to) (&ko_make_with_layers_and_negmods(0, (from), (to), 1<<_LOW_S, MOD_MASK_SHIFT))
 //#define MAKE_KO_RAI(from, to) (&ko_make_with_layers_and_negmods(0, (from), (to), 1<<_RAISE, MOD_MASK_SHIFT))
@@ -126,21 +124,17 @@ const key_override_t **key_overrides = (const key_override_t *[]){
 	MAKE_KO_LOW(KC_RCBR, JP_RCBR),      // }
 	MAKE_KO_LOW(KC_LBRC, JP_LBRC),      // [
 	MAKE_KO_LOW(KC_RBRC, JP_RBRC),      // ]
+	MAKE_KO_LOW(KC_BSLS, JP_BSLS),      /* \ */
+    MAKE_KO_LOW(KC_QUOT, JP_QUOT),      // '
+	MAKE_KO_LOW(KC_GRV,  JP_GRV),       // `
 
-	MAKE_KO_RAI(KC_LCBR, JP_LCBR),      // {
-	MAKE_KO_RAI(KC_RCBR, JP_RCBR),      // }
-	MAKE_KO_RAI(KC_LBRC, JP_LBRC),      // [
-	MAKE_KO_RAI(KC_RBRC, JP_RBRC),      // ]
 	MAKE_KO_RAI(KC_EQL,  JP_EQL),       // =
 	MAKE_KO_RAI(KC_PLUS, JP_PLUS),      // +
 	MAKE_KO_RAI(KC_MINS, JP_MINS),      // -
 	MAKE_KO_RAI(KC_ASTR, JP_ASTR),      // *
 	MAKE_KO_RAI(KC_UNDS, JP_UNDS),      // _
 
-	MAKE_KO(KC_BSLS, JP_BSLS),          /* \ */
 	MAKE_KO(KC_SCLN, JP_SCLN),          // ;
-	MAKE_KO(KC_QUOT, JP_QUOT),          // '
-	MAKE_KO(KC_GRV,  JP_GRV),           // `
 	MAKE_KO(KC_COLN, JP_COLN),          // :
 
     NULL
@@ -171,61 +165,43 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 /* Lower
  * ,-----------------------------------------------------------------------------------.
- * | ` ~  |  1 ! |  2 @ |  3 # |  4 $ |  5 % |  6 ^ |  7 & |  8 * |  9 ( |  0 ) | \ |  |
+ * |  `   |  !   |  @   |  #   |  $   |  %   |  ^   |  &   |  *   |  (   |  )   |  \   |
  * |------+------+------+------+------+-------------+------+------+------+------+------|
- * |      |      |PrintS|      |Ctrl+T|      |      |  4   |  5   |  6 { |    } | ' "  |
+ * |  ~   |      |PrintS|      |Ctrl+T|      |      |  '   |  "   |  {   |  }   |  |   |
  * |------+------+------+------+------+------|------+------+------+------+------+------|
- * |      |      | DEL  | Bksp | Enter|      |      |  1   |  2   |  3 [ |    ] |      |
+ * |      |      | DEL  | Bksp | Enter|      |      |      |      |  [   |  ]   |  ¥   |
  * |------+------+------+------+------+------+------+------+------+------+------+------|
- * |      |      |      | App  | XXXX |             |  0   |  .   |  ,   | "0x" |      |
+ * |      |      |      | App  | XXXX |             |      |      |      | "0x" |      |
  * `-----------------------------------------------------------------------------------'
  */
 [_LOWER] = LAYOUT_ortho_grid( \
-  KC_GRV,  KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_BSLS, \
-  _______, _______, AL_PSCR, _______, C(KC_T), _______, _______, KC_4,    KC_5,    KC_6,    _______, KC_QUOT, \
-  SFT_LOW, _______, KC_DEL,  KC_BSPC, KC_ENT,  _______, _______, KC_1,    KC_2,    KC_3,    _______, _______, \
-  _______, _______, _______, KC_APP,  XXXXXXX, _______, _______, KC_0,    KC_DOT,  KC_COMM, MA_0X,   _______  \
-),
-
-/* Lower + Shift
- * ,-----------------------------------------------------------------------------------.
- * |      |      |      |      |      |      |      |      |      | (    | )    |      |
- * |------+------+------+------+------+-------------+------+------+------+------+------|
- * |      |      |      |      |      |      |      |      |      | {    | }    |      |
- * |------+------+------+------+------+------|------+------+------+------+------+------|
- * |      |      |      |      |      |      |      |      |      | [    | ]    |      |
- * |------+------+------+------+------+------+------+------+------+------+------+------|
- * |      |      |      |      |      |             |      |      |      |      |      |
- * `-----------------------------------------------------------------------------------'
- */
-[_LOW_S] = LAYOUT_ortho_grid( \
-  KC_TILD, KC_EXLM, KC_AT,   KC_HASH, KC_DLR,  KC_PERC, KC_CIRC, KC_AMPR, KC_ASTR, KC_LPRN, KC_RPRN, KC_PIPE, \
-  _______, _______, _______, _______, _______, _______, _______, _______, _______, KC_LCBR, KC_RCBR, KC_DQT, \
-  XXXXXXX, _______, _______, _______, _______, _______, _______, _______, _______, KC_LBRC, KC_RBRC, _______, \
-  _______, _______, _______, _______, XXXXXXX, _______, _______, _______, _______, _______, _______, _______  \
+  KC_GRV,  KC_EXLM, KC_AT,   KC_HASH, KC_DLR,  KC_PERC, KC_CIRC, KC_AMPR, KC_ASTR, KC_LPRN, KC_RPRN, KC_BSLS, \
+  KC_TILD, _______, AL_PSCR, _______, C(KC_T), _______, _______, KC_QUOT, KC_DQT,  KC_LCBR, KC_RCBR, KC_PIPE, \
+  _______, _______, KC_DEL,  KC_BSPC, KC_ENT,  _______, _______, _______, _______, KC_LBRC, KC_RBRC, KC_JYEN, \
+  _______, _______, _______, KC_APP,  XXXXXXX, _______, _______, _______, _______, _______, _______, _______  \
 ),
 
 /* Raise
  * ,-----------------------------------------------------------------------------------.
- * |      |  F1  |  F2  |  F3  |  F4  |      |      |   =  |PrintS|   {  |   }  | Del  |
+ * |      |      |      |      |      |      |      |   =  |      |      |      | Del  |
  * |------+------+------+------+------+-------------+------+------+------+------+------|
- * |      |  F5  |  F6  |  F7  |  F8  |      |   +  |   -  |      |   [  |   ]  |      |
+ * |      |      |      |      |      |      |      |   -  |   _  |   +  |   *  |      |
  * |------+------+------+------+------+------|------+------+------+------+------+------|
- * |      |  F9  |  F10 |  F11 |  F12 |      |   *  |   _  | HOME | END  | PGUP | PGDN |
+ * |      |      |      |      |      |      |      |      | HOME | END  | PGUP | PGDN |
  * |------+------+------+------+------+------+------+------+------+------+------+------|
  * |      |      |      |      |      |             | XXXX | App  |      |      |      |
  * `-----------------------------------------------------------------------------------'
  */
 [_RAISE] = LAYOUT_ortho_grid( \
-  _______, KC_F1,   KC_F2,   KC_F3,   KC_F4,   _______, _______, KC_EQL,  AL_PSCR, KC_LCBR, KC_RCBR, KC_DEL, \
-  _______, KC_F5,   KC_F6,   KC_F7,   KC_F8,   _______, KC_PLUS, KC_MINS, _______, KC_LBRC, KC_RBRC, _______, \
-  _______, KC_F9,   KC_F10,  KC_F11,  KC_F12,  _______, KC_PAST, KC_UNDS, KC_HOME, KC_END,  KC_PGUP, KC_PGDN, \
-  _______, _______, _______, _______, _______, _______, XXXXXXX, _______, KC_APP,  _______, _______, _______  \
+  _______, _______, _______, _______, _______, _______, _______, KC_EQL,  _______, _______, _______, KC_DEL, \
+  _______, _______, _______, _______, _______, _______, _______, KC_MINS, KC_UNDS, KC_PLUS, KC_PAST, _______, \
+  _______, _______, _______, _______, _______, _______, _______, _______, KC_HOME, KC_END,  KC_PGUP, KC_PGDN, \
+  _______, _______, _______, _______, _______, _______, _______, XXXXXXX, KC_APP,  _______, _______, _______  \
 ),
 
 /* Function 1
  * ,-----------------------------------------------------------------------------------.
- * | ESC  |      |      |      |      |      |      |      |PrintS|      |WHE_U | Del  |
+ * |      |      |      |      |      |      |      |      |PrintS|      |WHE_U | Del  |
  * |------+------+------+------+------+-------------+------+------+------+------+------|
  * |      |      |      |      |      |      |      |      |      |WHE_L |WHE_D |WHE_R |
  * |------+------+------+------+------+------|------+------+------+------+------+------|
@@ -235,7 +211,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * `-----------------------------------------------------------------------------------'
  */
 [_FUNC1] = LAYOUT_ortho_grid( \
-  KC_ESC,  _______, _______, _______, _______, _______, _______, _______, AL_PSCR, _______, KC_WH_U, KC_DEL, \
+  _______, _______, _______, _______, _______, _______, _______, _______, AL_PSCR, _______, KC_WH_U, KC_DEL, \
   _______, _______, _______, _______, _______, _______, _______, _______, _______, KC_WH_L, KC_WH_D, KC_WH_R, \
   _______, _______, _______, _______, _______, _______, _______, _______, KC_PGUP, KC_PGDN, _______, KC_BTN2, \
   _______, _______, _______, _______, _______, _______, _______, _______, XXXXXXX, _______, _______, _______  \
@@ -243,20 +219,20 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 /* Function 2
  * ,-----------------------------------------------------------------------------------.
- * | ESC  | F1   | F2   | F3   | F4   |      |      |      |      |      |      | Bksp |
+ * |      | F1   | F2   | F3   | F4   | F5   | F6   |   7  |   8  |   9  |      |      |
  * |------+------+------+------+------+-------------+------+------+------+------+------|
- * |      | F5   | F6   | F7   | F8   |      |      |      |      |      |      |      |
+ * |      | F7   | F8   | F9   | F10  | F11  | F12  |   4  |   5  |   6  |      |      |
  * |------+------+------+------+------+------|------+------+------+------+------+------|
- * |      | F9   | F10  | F11  | F12  |      |      |      |      |      |      |      |
+ * |      |      |      |      |      |      |      |   1  |   2  |   3  |      |      |
  * |------+------+------+------+------+------+------+------+------+------+------+------|
- * |      |      |      | XXXX |      |             |      |      |      |      |      |
+ * |      |      |      | XXXX |      |             |   0  |   .  |   ,  | "0x" |      |
  * `-----------------------------------------------------------------------------------'
  */
 [_FUNC2] = LAYOUT_ortho_grid( \
-  KC_ESC,  KC_F1,   KC_F2,   KC_F3,   KC_F4,   _______, _______, _______, _______, _______, _______, KC_BSPC, \
-  _______, KC_F5,   KC_F6,   KC_F7,   KC_F8,   _______, _______, _______, _______, _______, _______, _______, \
-  _______, KC_F9,   KC_F10,  KC_F11 , KC_F12,  _______, _______, _______, _______, _______, _______, _______, \
-  _______, _______, _______, XXXXXXX, _______, _______, _______, _______, _______, _______, _______, _______ \
+  _______, KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,   KC_7,    KC_8,    KC_9,    _______, _______, \
+  _______, KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,  KC_4,    KC_5,    KC_6,    _______, _______, \
+  _______, _______, _______, _______, _______, _______, _______, KC_1,    KC_2,    KC_3,    _______, _______, \
+  _______, _______, _______, XXXXXXX, _______, _______, _______, KC_0,    KC_DOT,  KC_COMM, MA_0X,   _______ \
 ),
 
 /* 10key
