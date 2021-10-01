@@ -193,9 +193,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * |------+------+------+------+------+-------------+------+------+------+------+------|
  * |      |      |      |      |      |      |      |      |      | {    | }    |      |
  * |------+------+------+------+------+------|------+------+------+------+------+------|
- * |      |      |      |      |      |      |      |      |      | [    | ]    |      |
+ * | XXXX |      |      |      |      |      |      |      |      | [    | ]    |      |
  * |------+------+------+------+------+------+------+------+------+------+------+------|
- * |      |      |      |      |      |             |      |      |      |      |      |
+ * |      |      |      |      | XXXX |             |      |      |      |      |      |
  * `-----------------------------------------------------------------------------------'
  */
 [_LOW_S] = LAYOUT_ortho_grid( \
@@ -225,7 +225,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 /* Function 1
  * ,-----------------------------------------------------------------------------------.
- * |      |      |      |      |      |      |      |      |PrintS|      |WHE_U | Del  |
+ * |      | F13  | F14  | F15  |      |      |      |      |PrintS|      |WHE_U | Del  |
  * |------+------+------+------+------+-------------+------+------+------+------+------|
  * |      |      |      |      |      |      |      |      |      |WHE_L |WHE_D |WHE_R |
  * |------+------+------+------+------+------|------+------+------+------+------+------|
@@ -235,7 +235,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * `-----------------------------------------------------------------------------------'
  */
 [_FUNC1] = LAYOUT_ortho_grid( \
-  _______, _______, _______, _______, _______, _______, _______, _______, AL_PSCR, _______, KC_WH_U, KC_DEL, \
+  _______, KC_F13,  KC_F14,  KC_F15,  _______, _______, _______, _______, AL_PSCR, _______, KC_WH_U, KC_DEL, \
   _______, _______, _______, _______, _______, _______, _______, _______, _______, KC_WH_L, KC_WH_D, KC_WH_R, \
   _______, _______, _______, _______, _______, _______, _______, _______, KC_PGUP, KC_PGDN, _______, KC_BTN2, \
   _______, _______, _______, _______, _______, _______, _______, _______, XXXXXXX, _______, _______, _______  \
@@ -613,29 +613,54 @@ qk_tap_dance_action_t tap_dance_actions[] = {
 #endif
 
 #ifdef RGB_MATRIX_ENABLE
+typedef struct {
+    uint8_t index;  // The first LED to light
+    uint8_t count;  // The number of LEDs to light
+} rgb_index_segment_t;
+
+static bool rgb_lighting_check( uint8_t rgb_num, const rgb_index_segment_t *list)
+{
+    for (uint8_t i = 0; 255 != list[i].index; i++) {
+        if ((list[i].index <= rgb_num) && (rgb_num < (list[i].index + list[i].count)))
+            return true;
+    }
+    return false;
+}
+#define IS_RGB_RIGHTING(num, index) rgb_lighting_check(num, index)
+
+const rgb_index_segment_t my_rgb_raise_list[] = {{10,12},{255,0}};
+const rgb_index_segment_t my_rgb_lower_list[] = {{46,12},{255,0}};
+const rgb_index_segment_t my_rgb_adjust_list[] = {{10,13}, {33,2}, {45,13},{255,0}};
+const rgb_index_segment_t my_rgb_func1_list[] = {{23,10},{255,0}};
+const rgb_index_segment_t my_rgb_func2_list[] = {{35,10},{255,0}};
+
 void rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
     for (uint8_t i = led_min; i <= led_max; i++) {
         switch(get_highest_layer(layer_state|default_layer_state)) {
             case _RAISE:
-                rgb_matrix_set_color(i, RGB_BLUE);
+                if (IS_RGB_RIGHTING(i, my_rgb_raise_list))
+                    rgb_matrix_set_color(i, RGB_BLUE);
                 break;
             case _LOWER:
-                rgb_matrix_set_color(i, RGB_YELLOW);
-                break;
             case _LOW_S:
-                rgb_matrix_set_color(i, RGB_YELLOW);
+                if (IS_RGB_RIGHTING(i, my_rgb_lower_list))
+                    rgb_matrix_set_color(i, RGB_YELLOW);
                 break;
             case _FUNC1:
-                rgb_matrix_set_color(i, RGB_CYAN);
+                if (IS_RGB_RIGHTING(i, my_rgb_func1_list))
+                    rgb_matrix_set_color(i, RGB_CYAN);
                 break;
             case _FUNC2:
-                rgb_matrix_set_color(i, RGB_MAGENTA);
+                if (IS_RGB_RIGHTING(i, my_rgb_func2_list))
+                    rgb_matrix_set_color(i, RGB_MAGENTA);
                 break;
             case _10KEY:
-                rgb_matrix_set_color(i, RGB_PURPLE);
+                if (IS_RGB_RIGHTING(i, my_rgb_lower_list))
+                    rgb_matrix_set_color(i, RGB_PURPLE);
                 break;
             case _ADJUST:
-                rgb_matrix_set_color(i, 0x80, 0x80, 0x80);
+                if (IS_RGB_RIGHTING(i, my_rgb_adjust_list))
+                    rgb_matrix_set_color(i, RGB_WHITE);
                 break;
             default:
                 break;
