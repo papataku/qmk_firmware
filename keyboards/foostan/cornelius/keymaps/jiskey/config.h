@@ -3,7 +3,7 @@
 
 #include "../../config.h"
 
-#define TAPPING_TERM 150
+#define TAPPING_TERM 180
 #define PERMISSIVE_HOLD
 
 #define SWAP_LCTR_LGUI

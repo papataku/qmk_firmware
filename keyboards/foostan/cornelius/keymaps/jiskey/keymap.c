@@ -154,21 +154,21 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * |------+------+------+------+------+------|------+------+------+------+------+------|
  * | Shift|   Z  |   X  |   C  |   V  |   B  |   N  |   M  |  , < |  . > |  Up  | /  ? |
  * |------+------+------+------+------+------+------+------+------+------+------+------|
- * | Ctrl | GUI  | Alt  | Fn2  |Eng/Lo|  Space/10k  |Jpn/Ra| Fn1  | Left | Down |Right |
+ * | Ctrl | GUI  | Alt  | Fn2  |Eng/Lo| Space|Spc/10|Jpn/Ra| Fn1  | Left | Down |Right |
  * `-----------------------------------------------------------------------------------'
  */
 [_QWERTY] = LAYOUT_ortho_grid( \
   KC_TAB,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_BSPC,  \
   M_ECAJ,  KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_ENT, \
   KC_LSFT, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_UP,   KC_SLSH,  \
-  KC_LCTL, KC_LGUI, KC_LALT, FUNC2,   M_EMHL,  M_SP10,  M_SP10,  M_KHKR,  TAP_F1,  KC_LEFT, KC_DOWN, KC_RGHT  \
+  KC_LCTL, KC_LGUI, KC_LALT, FUNC2,   M_EMHL,  KC_SPC,  M_SP10,  M_KHKR,  TAP_F1,  KC_LEFT, KC_DOWN, KC_RGHT  \
 ),
 
 
 
 /* Lower
  * ,-----------------------------------------------------------------------------------.
- * |  `   |  !   |  @   |  #   |  $   |  %   |  ^   |  &   |    * |  (   |  )   |  \   |
+ * |  `   |  !   |  @   |  #   |  $   |  %   |  ^   |  &   |  *   |  (   |  )   |  \   |
  * |------+------+------+------+------+-------------+------+------+------+------+------|
  * |  ~   |      |PrintS|      |Ctrl+T|      |      |  '   |  "   |  {   |  }   |  |   |
  * |------+------+------+------+------+------|------+------+------+------+------+------|
@@ -233,27 +233,27 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  */
 [_FUNC2] = LAYOUT_ortho_grid( \
   _______, KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   XXXXXXX, XXXXXXX, KC_UP,   XXXXXXX, XXXXXXX, _______, \
-  _______, KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,  XXXXXXX, KC_LEFT, KC_DOWN, KC_RGHT , XXXXXXX, _______, \
+  _______, KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,  XXXXXXX, KC_LEFT, KC_DOWN, KC_RGHT, XXXXXXX, _______, \
   _______, KC_F11,  KC_F12,  XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, \
   _______, _______, _______, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX \
 ),
 
 /* 10key
  * ,-----------------------------------------------------------------------------------.
- * |      |      |      |      |      |      |      |  7   |  8   |  9   |      |      |
+ * |      |      |      |      |      |      |  7   |  8   |  9   |      |      |      |
  * |------+------+------+------+------+-------------+------+------+------+------+------|
- * |      |      |      |      |      |      |      |  4   |  5   |  6   |      |      |
+ * |      |      |      |      |      |      |  4   |  5   |  6   |      |      |      |
  * |------+------+------+------+------+------|------+------+------+------+------+------|
- * |      |      |      |      |      |      |      |  1   |  2   |  3   |      |      |
+ * |      |      |      |      |      |      |  1   |  2   |  3   |      |      |      |
  * |------+------+------+------+------+------+------+------+------+------+------+------|
- * |      |      |      |      |      |             |  0   |  .   |  ,   | "0x" |      |
+ * |      |      |      |      |      |      |  0   |  .   |  ,   | "0x" |      |      |
  * `-----------------------------------------------------------------------------------'
  */
 [_10KEY] = LAYOUT_ortho_grid( \
-  _______, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, KC_7,    KC_8,    KC_9,    XXXXXXX, _______, \
-  _______, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, KC_4,    KC_5,    KC_6,    XXXXXXX, _______, \
-  _______, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, KC_1,    KC_2,    KC_3,    XXXXXXX, XXXXXXX, \
-  _______, _______, _______, XXXXXXX, EXT_10K, XXXXXXX, XXXXXXX, KC_0,    KC_DOT,  KC_COMM, MA_0X,   EXT_10K  \
+  _______, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, KC_7,    KC_8,    KC_9,    XXXXXXX, XXXXXXX, _______, \
+  _______, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, KC_4,    KC_5,    KC_6,    XXXXXXX, XXXXXXX, _______, \
+  _______, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, KC_1,    KC_2,    KC_3,    XXXXXXX, XXXXXXX, XXXXXXX, \
+  _______, _______, _______, XXXXXXX, EXT_10K, XXXXXXX, KC_0,    KC_DOT,  KC_COMM, MA_0X,   XXXXXXX, EXT_10K  \
 ),
 
 /* Adjust (Lower + Raise)
