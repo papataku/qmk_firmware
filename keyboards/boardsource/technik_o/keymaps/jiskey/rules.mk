@@ -4,6 +4,7 @@ DYNAMIC_MACRO_ENABLE = yes
 TAP_DANCE_ENABLE = yes
 NKRO_ENABLE = no
 KEY_OVERRIDE_ENABLE = yes
+#RGB_MATRIX_ENABLE = no
 
 CONSOLE_ENABLE = no         # Console for debug(+400)
 
