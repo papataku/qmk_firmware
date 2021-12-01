@@ -20,8 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "config_common.h"
 
 /* USB Device descriptor parameter */
-#define VENDOR_ID    0xFEED
-#define PRODUCT_ID   0x0505
+#define VENDOR_ID    0x8490
+#define PRODUCT_ID   0x0004
 #define DEVICE_VER   0x0001
 #define MANUFACTURER papataku
 #define PRODUCT      quarkey_z40
@@ -63,7 +63,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //#define BACKLIGHT_BREATHING
 
 #define RGB_DI_PIN F1
-#define RGB_MATRIX_MAXIMUM_BRIGHTNESS 120
+#define RGB_MATRIX_MAXIMUM_BRIGHTNESS 80
 #define DRIVER_LED_TOTAL 47
 //#ifdef RGB_DI_PIN
 //#    define RGBLED_NUM 16

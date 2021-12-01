@@ -19,7 +19,7 @@
 #include "keymap_jp.h"
 #include "twpair_on_jis.h"
 
-#define LAYOUT_ortho_grid LAYOUT
+#define LAYOUT_ortho_grid LAYOUT_ortho_4x12
 
 typedef union {
   uint32_t raw;
