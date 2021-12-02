@@ -63,7 +63,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //#define BACKLIGHT_BREATHING
 
 #define RGB_DI_PIN F1
-#define RGB_MATRIX_MAXIMUM_BRIGHTNESS 80
+//#define RGB_MATRIX_MAXIMUM_BRIGHTNESS 80
 #define DRIVER_LED_TOTAL 47
 //#ifdef RGB_DI_PIN
 //#    define RGBLED_NUM 16

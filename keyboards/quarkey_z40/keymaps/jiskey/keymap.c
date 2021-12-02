@@ -295,7 +295,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * ,-----------------------------------------------------------------------------------.
  * |      | COL1 | COL2 | COL3 | COL4 |Aud on|AudOff|AGnorm|AGswap|JIS_TG|      |RESET |
  * |------+------+------+------+------+-------------+------+------+------+------+------|
- * | XXXX | PLY1 | PLY2 |      |      |RG_TOG|RG_MOD|RG_HUD|RG_HUI|      |      |      |
+ * | XXXX | PLY1 | PLY2 |      |      |RG_TOG|RG_MOD|RG_HUD|RG_HUI|RG_VAI|RG_VAD|      |
  * |------+------+------+------+------+------|------+------+------+------+------+------|
  * |      | SAVE1| SAVE2|ALT C |ALT V |      |      |      |      |MU_BT2| MUS_U|MU_BT2|
  * |------+------+------+------+------+------+------+------+------+------+------+------|
@@ -304,7 +304,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  */
 [_ADJUST] = LAYOUT_ortho_grid( \
   _______, MA_COL1, MA_COL2, MA_COL3, MA_COL4, AU_ON,   AU_OFF,  AG_NORM, AG_SWAP, JIS_TOG, _______, RESET,   \
-  XXXXXXX, DM_PLY1, DM_PLY2, _______, _______, RGB_TOG, RGB_MOD, RGB_HUD, RGB_HUI, _______, _______, _______, \
+  XXXXXXX, DM_PLY1, DM_PLY2, _______, _______, RGB_TOG, RGB_MOD, RGB_HUD, RGB_HUI, RGB_VAI, RGB_VAD, _______, \
   _______, DM_REC1, DM_REC2, AL_C,    AL_V,    _______, _______, _______, _______, KC_BTN1, KC_MS_U, KC_BTN2, \
   _______, DM_RSTP, DM_RSTP, _______, TGL_LOW, _______, _______, TGL_RIS, _______, KC_MS_L, KC_MS_D, KC_MS_R  \
 )
@@ -642,11 +642,11 @@ static bool rgb_lighting_check( uint8_t rgb_num, const rgb_index_segment_t *list
 }
 #define IS_RGB_RIGHTING(num, index) rgb_lighting_check(num, index)
 
-const rgb_index_segment_t my_rgb_raise_list[] = {{10,12},{255,0}};
-const rgb_index_segment_t my_rgb_lower_list[] = {{46,12},{255,0}};
-const rgb_index_segment_t my_rgb_adjust_list[] = {{10,13}, {33,2}, {45,13},{255,0}};
-const rgb_index_segment_t my_rgb_func1_list[] = {{23,10},{255,0}};
-const rgb_index_segment_t my_rgb_func2_list[] = {{35,10},{255,0}};
+const rgb_index_segment_t my_rgb_raise_list[] = {{35,12},{255,0}};
+const rgb_index_segment_t my_rgb_lower_list[] = {{ 0,11},{255,0}};
+const rgb_index_segment_t my_rgb_adjust_list[] = {{0,12}, {22,2}, {34,13},{255,0}};
+const rgb_index_segment_t my_rgb_func1_list[] = {{12,10},{255,0}};
+const rgb_index_segment_t my_rgb_func2_list[] = {{24,10},{255,0}};
 
 void rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
     for (uint8_t i = led_min; i <= led_max; i++) {
