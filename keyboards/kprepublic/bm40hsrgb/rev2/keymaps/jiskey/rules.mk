@@ -1,0 +1,12 @@
+EXTRAKEY_ENABLE = yes
+MOUSEKEY_ENABLE  = yes
+#DYNAMIC_MACRO_ENABLE = yes
+TAP_DANCE_ENABLE = no
+NKRO_ENABLE = no
+KEY_OVERRIDE_ENABLE = yes
+#RGB_MATRIX_ENABLE = no
+
+CONSOLE_ENABLE = no         # Console for debug(+400)
+
+SRC +=  twpair_on_jis.c
+
