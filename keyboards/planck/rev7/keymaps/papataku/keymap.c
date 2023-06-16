@@ -46,8 +46,13 @@ enum planck_keycodes {
 #define FN2_TAB LT(_FUNC2,KC_TAB)     // タップでTab                 ホールドでFunction_2レイヤーon
 #define FN1_SLS LT(_FUNC1,KC_SLSH)    // タップで/                   ホールドでFunction_1レイヤーon
 #define ADJUST  MO(_ADJUST)           // ホールドでAdjustレイヤーをon
+#if 0
 #define FUNC1   MO(_FUNC1)            // ホールドでFunction1レイヤーをon
 #define FUNC2   MO(_FUNC2)            // ホールドでFunction2レイヤーをon
+#else
+#define FUNC1   LT(_FUNC1, JP_HENK)
+#define FUNC2   LT(_FUNC2, JP_MHEN)
+#endif
 #define AL_PSCR LALT(KC_PSCR)         // ALT + PrintScreen
 #define AL_C    LALT(KC_C)            // ALT + C
 #define AL_V    LALT(KC_V)            // ALT + V
@@ -106,14 +111,14 @@ const key_override_t **key_overrides = (const key_override_t *[]){
 
 enum combo_events {
   CMB_HENKA,
-  CMD_MUHEN,
+  CMB_MUHEN,
 };
 
 const uint16_t PROGMEM HEN_combo[] = {KC_J, KC_K, COMBO_END};
 const uint16_t PROGMEM MUHEN_combo[] = {KC_D, KC_F, COMBO_END};
 combo_t key_combos[] = {
     [CMB_HENKA] = COMBO_ACTION(HEN_combo),
-    [CMD_MUHEN] = COMBO_ACTION(MUHEN_combo),
+    [CMB_MUHEN] = COMBO_ACTION(MUHEN_combo),
 };
 #endif
 
@@ -315,7 +320,7 @@ void process_combo_event(uint16_t combo_index, bool pressed) {
         tap_code16(KC_LNG1);
       }
       break;
-    case CMD_MUHEN:
+    case CMB_MUHEN:
       if (pressed) {
         tap_code16(JP_MHEN);
         tap_code16(KC_LNG2);
