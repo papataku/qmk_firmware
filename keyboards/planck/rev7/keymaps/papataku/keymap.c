@@ -271,16 +271,37 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   return true;
 };
 
+uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
+    switch (keycode) {
+        //case LOW_SP:
+        case RAI_SP:
+        case ADJ_ESC:
+            return 10;
+        default:
+            return TAPPING_TERM;
+    }
+}
 
 bool get_permissive_hold(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
-        case LOW_SP:
+        //case LOW_SP:
         case RAI_SP:
         case ADJ_ESC:
             // Immediately select the hold action when another key is tapped.
             return true;
         default:
             // Do not select the hold action when another key is tapped.
+            return false;
+    }
+}
+
+bool get_retro_tapping(uint16_t keycode, keyrecord_t *record) {
+    switch (keycode) {
+        case LOW_SP:
+        case RAI_SP:
+        case ADJ_ESC:
+            return true;
+        default:
             return false;
     }
 }
