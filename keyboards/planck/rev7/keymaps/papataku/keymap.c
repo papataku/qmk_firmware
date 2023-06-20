@@ -281,6 +281,8 @@ uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
         //case LOW_SP:
         case RAI_SP:
         case ADJ_ESC:
+        case FUNC1:
+        case FUNC2:
             return 10;
         default:
             return TAPPING_TERM;
@@ -292,6 +294,8 @@ bool get_permissive_hold(uint16_t keycode, keyrecord_t *record) {
         //case LOW_SP:
         case RAI_SP:
         case ADJ_ESC:
+        case FUNC1:
+        case FUNC2:
             // Immediately select the hold action when another key is tapped.
             return true;
         default:
@@ -305,6 +309,8 @@ bool get_retro_tapping(uint16_t keycode, keyrecord_t *record) {
         case LOW_SP:
         case RAI_SP:
         case ADJ_ESC:
+        case FUNC1:
+        case FUNC2:
             return true;
         default:
             return false;
