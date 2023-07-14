@@ -16,6 +16,17 @@
 
 #include QMK_KEYBOARD_H
 #include "keymap_japanese.h"
+#include "twpair_on_jis.h"
+#include "user_song_list.h"
+
+typedef union {
+  uint32_t raw;
+  struct {
+    uint8_t     jis_key_trans :2;
+  };
+} user_config_t;
+
+user_config_t user_config;
 
 enum planck_layers {
   _QWERTY,        // デフォルトレイヤー(JIS配列で認識)
@@ -40,7 +51,8 @@ enum planck_keycodes {
 };
 
 #define LOW_SP LT(_LOWER,KC_SPC)
-#define RAI_SP LT(_RAISE,KC_SPC)
+//#define RAI_SP LT(_RAISE,KC_SPC)
+#define RAI_SP LT(_RAISE,JP_HENK)
 
 #define ADJ_ESC LT(_ADJUST,KC_ESC)    // タップでESC                 ホールドでADJUSTレイヤーon
 #define FN2_TAB LT(_FUNC2,KC_TAB)     // タップでTab                 ホールドでFunction_2レイヤーon
@@ -114,8 +126,8 @@ enum combo_events {
   CMB_MUHEN,
 };
 
-const uint16_t PROGMEM HEN_combo[] = {KC_J, KC_K, COMBO_END};
-const uint16_t PROGMEM MUHEN_combo[] = {KC_D, KC_F, COMBO_END};
+const uint16_t PROGMEM HEN_combo[] = {KC_LSFT, RAI_SP, COMBO_END};
+const uint16_t PROGMEM MUHEN_combo[] = {KC_LSFT, LOW_SP, COMBO_END};
 combo_t key_combos[] = {
     [CMB_HENKA] = COMBO_ACTION(HEN_combo),
     [CMB_MUHEN] = COMBO_ACTION(MUHEN_combo),
@@ -222,20 +234,29 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * |------+------+------+------+------+-------------+------+------+------+------+------|
  * | XXXX |      |      |      |      |RG_TOG|RG_MOD|RG_HUD|RG_HUI|      |      |      |
  * |------+------+------+------+------+------|------+------+------+------+------+------|
- * |      |      |      |ALT C |ALT V |      |      |      |      |      |      |      |
+ * |      |      |      |ALT C |ALT V | SAT+ | SAT- |BRGTH+|BRGTH-|      |      |      |
  * |------+------+------+------+------+------+------+------+------+------+------+------|
  * |      |      |      |      |             |             |      |      |      |      |
  * `-----------------------------------------------------------------------------------'
  */
 [_ADJUST] = LAYOUT_planck_2x2u(
-  _______, MA_COL1, MA_COL2, MA_COL3, MA_COL4, AU_ON,   AU_OFF,  AG_NORM, AG_SWAP, JIS_OVV, _______, QK_BOOT,   \
+  _______, MA_COL1, MA_COL2, MA_COL3, MA_COL4, AU_ON,   AU_OFF,  AG_NORM, AG_SWAP, JIS_TOG, _______, QK_BOOT,   \
   XXXXXXX, XXXXXXX, XXXXXXX, _______, _______, RGB_TOG, RGB_MOD, RGB_HUD, RGB_HUI, _______, _______, _______, \
-  _______, XXXXXXX, XXXXXXX, AL_C,    AL_V,    _______, _______, _______, _______, XXXXXXX, XXXXXXX, XXXXXXX, \
+  _______, XXXXXXX, XXXXXXX, AL_C,    AL_V,    RGB_SAI, RGB_SAD, RGB_VAI, RGB_VAD, XXXXXXX, XXXXXXX, XXXXXXX, \
   _______, XXXXXXX, XXXXXXX, _______, XXXXXXX,                   XXXXXXX, _______, XXXXXXX, XXXXXXX, XXXXXXX  \
 )
 
 };
 /* clang-format on */
+
+
+// サウンド設定
+#ifdef AUDIO_ENABLE
+  float jiskey_on_song[][2]      = SONG(ONE_UP_SOUND);
+  float jiskey_off_song[][2]     = SONG(MARIO_GAMEOVER);
+  float start_up_song[][2]       = STARTUP_SONG;
+#endif
+
 
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
@@ -271,6 +292,37 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       }
       return false;
       break;
+    case JIS_TOG:
+      if (record->event.pressed) {
+        user_config.jis_key_trans += 1; // Toggles the status
+#ifdef KEY_OVERRIDE_ENABLE
+        if (3 == user_config.jis_key_trans)
+            user_config.jis_key_trans = 0;
+        if (2 == user_config.jis_key_trans)
+            key_override_on();
+        else
+            key_override_off();
+#else
+        if (2 == user_config.jis_key_trans)
+            user_config.jis_key_trans = 0;
+#endif
+        eeconfig_update_user(user_config.raw); // Writes the new status to EEPROM
+
+#ifdef AUDIO_ENABLE
+        if ((1 == user_config.jis_key_trans) || (2 == user_config.jis_key_trans))
+          PLAY_SONG(jiskey_on_song);
+        else
+          PLAY_SONG(jiskey_off_song);
+#endif
+      }
+      return false;
+      break;
+  }
+
+  if (1 == user_config.jis_key_trans) {
+    // type writer pairing on jis keyboard
+    if (!twpair_on_jis(keycode, record))
+      return false;
   }
 
   return true;
@@ -279,7 +331,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
         //case LOW_SP:
-        case RAI_SP:
+        //case RAI_SP:
         case ADJ_ESC:
         case FUNC1:
         case FUNC2:
@@ -292,7 +344,7 @@ uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
 bool get_permissive_hold(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
         //case LOW_SP:
-        case RAI_SP:
+        //case RAI_SP:
         case ADJ_ESC:
         case FUNC1:
         case FUNC2:
@@ -307,7 +359,7 @@ bool get_permissive_hold(uint16_t keycode, keyrecord_t *record) {
 bool get_retro_tapping(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
         case LOW_SP:
-        case RAI_SP:
+        //case RAI_SP:
         case ADJ_ESC:
         case FUNC1:
         case FUNC2:
@@ -316,6 +368,19 @@ bool get_retro_tapping(uint16_t keycode, keyrecord_t *record) {
             return false;
     }
 }
+
+bool get_hold_on_other_key_press(uint16_t keycode, keyrecord_t *record) {
+    switch (keycode) {
+        case LOW_SP:
+        case RAI_SP:
+            // Immediately select the hold action when another key is pressed.
+            return true;
+        default:
+            // Do not select the hold action when another key is pressed.
+            return false;
+    }
+}
+
 
 #ifdef COMBO_ENABLE
 void process_combo_event(uint16_t combo_index, bool pressed) {
@@ -335,3 +400,26 @@ void process_combo_event(uint16_t combo_index, bool pressed) {
   }
 }
 #endif
+
+
+
+void keyboard_post_init_user(void) {
+#ifdef CONSOLE_ENABLE
+    debug_enable=true;
+    debug_matrix=true;
+#endif
+    // Read the user config from EEPROM
+    user_config.raw = eeconfig_read_user();
+
+#ifdef KEY_OVERRIDE_ENABLE
+    if (2 == user_config.jis_key_trans)
+        key_override_on();
+    else
+        key_override_off();
+#endif
+
+#ifdef AUDIO_ENABLE
+    PLAY_SONG(start_up_song);
+#endif
+
+}
